@@ -1,0 +1,395 @@
+/* Fixed (not min-) height + hidden overflow so the page itself never scrolls as one block —
+   the sidebar stays pinned to the viewport and only .main scrolls internally. */
+.layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--background);
+}
+
+/* Floating rounded card in every state (expanded and collapsed alike), matching the
+   reference — the sidebar never sits flush against the viewport edge, always with margin
+   and fully-rounded corners. Only width/padding differ between the two states. */
+.sidebar {
+    width: 280px;
+    margin: 1.25rem 0 1.25rem 1.25rem;
+    background: var(--primary-dark);
+    padding: 1.5rem 1.25rem 1rem;
+    border-radius: 28px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    color: white;
+    will-change: width;
+    transition:
+        width 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        margin 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        border-radius 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapsed {
+    width: 84px;
+    padding: 1.5rem 0.65rem 1rem;
+    align-items: center;
+}
+
+/* ---- Brand row: logo badge + wordmark + sign-out icon button ---- */
+.brandRow {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.collapsed .brandRow {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.logoBadge {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: white;
+}
+
+.logoBadge img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.wordmark {
+    flex: 1;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.headerIconBtn {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #c2c6ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.headerIconBtn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    color: white;
+}
+
+/* ---- Nav ---- */
+/* Scrollbar is invisible by default and only fades in while .navScrolling is set (toggled by
+   the onScroll handler in DashboardLayout, which clears it 2s after the last scroll event) —
+   Firefox has no equivalent to a transitioned ::-webkit-scrollbar-thumb, so it falls back to
+   `scrollbar-width: thin`, always faintly visible there. */
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.nav::-webkit-scrollbar {
+    width: 5px;
+}
+
+.nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.nav::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.navScrolling {
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.navScrolling::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    color: #c2c6ee;
+    transition: background 0.15s, color 0.15s;
+    font-weight: 500;
+    white-space: nowrap;
+    font-family: inherit;
+    font-size: 0.88rem;
+    background: transparent;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+}
+
+.collapsed .navItem {
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+.navItemLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    overflow: hidden;
+    transition: gap 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapsed .navItemLeft {
+    gap: 0;
+}
+
+/* Always rendered — same reasoning as .titleBlock above. */
+.navLabel {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    opacity: 1;
+    transition: max-width 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease;
+}
+
+.collapsed .navLabel {
+    max-width: 0;
+    opacity: 0;
+}
+
+.iconBox {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    transition: background 0.15s, color 0.15s;
+}
+
+/* Always rendered — same reasoning as .titleBlock above. */
+.chevron {
+    flex-shrink: 0;
+    opacity: 0.45;
+    max-width: 16px;
+    overflow: hidden;
+    transition: max-width 0.22s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease;
+}
+
+.collapsed .chevron {
+    max-width: 0;
+    opacity: 0;
+}
+
+.navItem:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: white;
+}
+
+.navItem.active {
+    background: rgba(255, 255, 255, 0.14);
+    color: white;
+}
+
+.navItem.active .iconBox {
+    background: white;
+    color: var(--primary-dark);
+}
+
+.navItem.active .chevron {
+    opacity: 0.8;
+}
+
+.main {
+    flex: 1;
+    padding: 1.75rem 2rem 2.5rem;
+    overflow-y: auto;
+    background: var(--background);
+}
+
+/* No shared card background — title sits as plain text and the search box / navy pill float
+   independently on the page background, matching the reference (no single bordered bar
+   wrapping all three together). Three-column grid (not flex space-between) so the search box
+   sits truly centered between the title and the pill, regardless of either's width. */
+.header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+.title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+
+/* ---- Header pill: profile + date/time, floating in the otherwise-white header. Same
+   --primary-dark navy as the sidebar, for one consistent accent color across the whole shell. ---- */
+.headerPill {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--primary-dark);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 1.1rem 0.5rem 0.65rem;
+    color: white;
+}
+
+.pillDivider {
+    width: 1px;
+    align-self: stretch;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.pillProfile {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+}
+
+.pillAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.pillName {
+    font-size: 0.95rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.pillRole {
+    font-size: 0.8rem;
+    color: #a7addf;
+    white-space: nowrap;
+}
+
+.pillChevron {
+    flex-shrink: 0;
+    color: #a7addf;
+}
+
+.pillDateTime {
+    text-align: right;
+    font-size: 0.82rem;
+    color: #c2c6ee;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.calendarPopover {
+    position: absolute;
+    top: calc(100% + 0.6rem);
+    right: 0;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    z-index: 50;
+}
+
+.mobileToggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .layout {
+        position: relative;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 50;
+        transform: translateX(-100%);
+        width: 280px;
+        margin: 0;
+        border-radius: 0;
+        box-shadow: none;
+        /* Always full width, flush, square-cornered on mobile when open — the floating-card
+           treatment is a desktop-only effect. */
+    }
+
+    .sidebar.mobileOpen {
+        transform: translateX(0);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar.collapsed {
+        width: 280px;
+        /* Ignore collapse state on mobile — always shows the full expanded rail. */
+    }
+
+    .main {
+        padding: 1rem;
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .header {
+        gap: 1rem;
+    }
+
+    .mobileToggle {
+        display: block;
+    }
+
+    .mobileOverlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    .desktopOnly {
+        display: none !important;
+    }
+}

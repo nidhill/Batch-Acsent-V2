@@ -1,0 +1,259 @@
+:root {
+  /* Brand Colors - Deep Navy & White Theme */
+  --primary-dark: #1b2559;
+  /* Sidebar / header navy */
+  --primary-darker: #141d47;
+  --primary: #4c56d6;
+  /* Accent indigo-blue (buttons, links, active states) */
+  --primary-hover: #3c46c0;
+  --primary-light: #eef0ff;
+
+  --secondary: #475569;
+  /* Slate */
+  --secondary-light: #f1f5f9;
+
+  --background: #f3f4f8;
+  /* Cool light gray page background */
+  --surface: #ffffff;
+  --surface-hover: #f8f9fc;
+
+  --text-primary: #1a1d29;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9aa0ae;
+  --text-inverse: #ffffff;
+
+  --border: #e7e9f1;
+  --border-focus: #4c56d6;
+
+  --success: #16a34a;
+  --success-light: #eafaf0;
+  --error: #dc2626;
+  --error-light: #fdecec;
+  --warning: #d97706;
+  --warning-light: #fef6e7;
+  --info: #2563eb;
+  --info-light: #eef4ff;
+
+  /* Shadows for depth (soft, diffuse — not a hard drop shadow) */
+  --shadow-sm: 0 1px 2px 0 rgb(17 24 66 / 0.04);
+  --shadow-md: 0 6px 16px -4px rgb(17 24 66 / 0.08), 0 2px 6px -2px rgb(17 24 66 / 0.06);
+  --shadow-lg: 0 20px 40px -12px rgb(17 24 66 / 0.16);
+
+  /* Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.65rem;
+  --radius-lg: 0.9rem;
+  --radius-xl: 1.15rem;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background: var(--background);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+}
+
+/* Component Classes */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  outline: none;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--text-inverse);
+  box-shadow: 0 2px 6px -1px rgba(76, 86, 214, 0.35);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 4px 10px -2px rgba(76, 86, 214, 0.45);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--secondary-light);
+  border-color: var(--secondary);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+/* Flat by default, like the reference — cards don't lift or jump on hover.
+   Interactive cards (rows/tiles that navigate somewhere) opt in via .card-hover. */
+.card-hover {
+  cursor: pointer;
+}
+
+.card-hover:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #d7dbec;
+}
+
+/* Pill / badge — light tinted background, colored text, small leading dot.
+   Semantic variants only (good/warn/bad/info/neutral); never the brand accent. */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.badge-good { background: var(--success-light); color: var(--success); }
+.badge-warn { background: var(--warning-light); color: var(--warning); }
+.badge-bad { background: var(--error-light); color: var(--error); }
+.badge-info { background: var(--info-light); color: var(--info); }
+.badge-neutral { background: var(--secondary-light); color: var(--text-secondary); }
+
+/* Shared KPI-card internals, for pages that adopt them */
+.kpi-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+}
+
+.kpi-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-delta {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Utilities */
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-muted {
+  color: var(--text-secondary);
+}
+
+.font-bold {
+  font-weight: 600;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
