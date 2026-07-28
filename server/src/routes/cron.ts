@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { getDb } from '../lib/mongodb'
 import { notifyUsers } from '../lib/notify'
+import { syncFromSupabase } from '../lib/supabaseSync'
 
 const router = Router()
 
@@ -85,6 +86,32 @@ router.get('/payment-reminders', async (req, res, next) => {
         }
 
         res.json({ processed: latestDueByAdmission.size, reminders_sent: remindersSent })
+    } catch (err) {
+        next(err)
+    }
+})
+
+// Keeps MongoDB caught up with the old Next.js app's still-live Supabase writes — see
+// lib/supabaseSync.ts for why this is insert-only, never overwriting existing documents.
+// Same CRON_SECRET pattern as payment-reminders above; meant to be hit by an external
+// scheduler (e.g. every 15 minutes), not by a logged-in user.
+router.get('/sync-supabase', async (req, res, next) => {
+    try {
+        const secret = process.env.CRON_SECRET
+        if (!secret) {
+            res.status(500).json({ error: 'CRON_SECRET is not configured — refusing to run an unauthenticated sync job' })
+            return
+        }
+        const authHeader = req.headers.authorization
+        const provided = authHeader?.replace('Bearer ', '') || (req.query.secret as string | undefined)
+        if (provided !== secret) {
+            res.status(401).json({ error: 'Unauthorized' })
+            return
+        }
+
+        const results = await syncFromSupabase()
+        const totalInserted = results.reduce((sum, r) => sum + r.inserted, 0)
+        res.json({ synced_at: new Date().toISOString(), total_inserted: totalInserted, results })
     } catch (err) {
         next(err)
     }

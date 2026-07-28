@@ -57,7 +57,6 @@ export default function ApproveUsersPage() {
         if (!confirm(`Approve ${user.email} as ${user.selectedRole} in ${user.selectedSchool}?`)) return
 
         try {
-            // Utilise API pour contourner RLS si necessaire et assurer que SUB_ADMIN peut le faire
             const response = await authedFetch('/api/update-user', {
                 method: 'POST',
                 headers: {

@@ -7,9 +7,9 @@ const router = Router()
 
 // These three routes touch real Supabase Auth accounts (delete/invite/update), so — same as
 // the original — they verify the caller manually against ba_users instead of going through the
-// shared `authenticate` middleware: an Admin/SUB_ADMIN role check with a plain 403 on failure,
-// not the "no profile" 401 that `requireUser` would throw. Preserved exactly to avoid changing
-// behavior on the most sensitive routes in the whole port.
+// shared `authenticate` middleware: an Admin role check with a plain 403 on failure, not the
+// "no profile" 401 that `requireUser` would throw. Preserved exactly to avoid changing behavior
+// on the most sensitive routes in the whole port.
 async function verifyAdminCaller(authHeader: string | undefined) {
     const supabaseUrl = process.env.SUPABASE_URL
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -29,7 +29,7 @@ async function verifyAdminCaller(authHeader: string | undefined) {
 
     const db = await getDb()
     const caller = await db.collection('ba_users').findOne({ _id: user.id as any })
-    if (!caller || (caller.role !== 'ADMIN' && caller.role !== 'SUB_ADMIN')) {
+    if (!caller || caller.role !== 'ADMIN') {
         return { ok: false as const, status: 403, message: 'Forbidden: Admins only' }
     }
 

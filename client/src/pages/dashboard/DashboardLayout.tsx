@@ -94,8 +94,8 @@ export default function DashboardLayout() {
         { label: 'LMS Usage Report', href: '/dashboard/lms-usage-report', icon: BarChart3, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
         { label: 'Reports', href: '/dashboard/reports', icon: FileText, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD', 'SALES_HEAD', 'ACADEMIC_LEAD'] },
         { label: 'Manage Schools & Courses', href: '/dashboard/admin/schools', icon: BookOpen, roles: ['ADMIN', 'CEO'] },
-        { label: 'Manage Users', href: '/dashboard/admin/users', icon: Users, roles: ['ADMIN', 'SUB_ADMIN', 'CEO'] },
-        { label: 'Approve Users', href: '/dashboard/admin/approve-users', icon: Users, roles: ['ADMIN', 'SUB_ADMIN', 'CEO'] },
+        { label: 'Manage Users', href: '/dashboard/admin/users', icon: Users, roles: ['ADMIN', 'CEO'] },
+        { label: 'Approve Users', href: '/dashboard/admin/approve-users', icon: Users, roles: ['ADMIN', 'CEO'] },
         { label: 'Activity Logs', href: '/dashboard/admin/logs', icon: Activity, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
     ]
 

@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import { authedFetch } from '@/lib/api'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell
 } from 'recharts'
+
+const LIST_PAGE_SIZE = 10
 
 interface Batch {
     id: string
@@ -37,12 +40,16 @@ export default function ProjectOverview() {
     })
     const [revenue, setRevenue] = useState<any>(null)
     const [analytics, setAnalytics] = useState<any>(null)
+    const [toVerifyPage, setToVerifyPage] = useState(1)
+    const [toCallPage, setToCallPage] = useState(1)
 
     useEffect(() => {
         const role = localStorage.getItem('userRole')
         setUserRole(role)
         fetchData(role, selectedSchool)
         fetchRevenue()
+        setToVerifyPage(1)
+        setToCallPage(1)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedSchool])
 
@@ -69,7 +76,7 @@ export default function ProjectOverview() {
             // running in parallel).
             const [batchRes, usersRes] = await Promise.all([
                 authedFetch('/api/batches?view=all'),
-                authedFetch('/api/users?directory=1&role=ADMIN,SUB_ADMIN,SHO,SSHO,ACADEMIC_LEAD,SALES,SALES_HEAD,CEO'),
+                authedFetch('/api/users?directory=1&role=ADMIN,SHO,SSHO,ACADEMIC_LEAD,SALES,SALES_HEAD,CEO'),
             ])
             const [batchJson, usersJson] = await Promise.all([batchRes.json(), usersRes.json()])
 
@@ -244,8 +251,9 @@ export default function ProjectOverview() {
                             </div>
 
                             {stats.toVerifyList.length > 0 ? (
+                                <>
                                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                                    {stats.toVerifyList.map((student: any, index: number) => (
+                                    {stats.toVerifyList.slice((toVerifyPage - 1) * LIST_PAGE_SIZE, toVerifyPage * LIST_PAGE_SIZE).map((student: any, index: number, page: any[]) => (
                                         <a
                                             key={student.id}
                                             href={`/dashboard/batch/${student.batch_id}`}
@@ -254,7 +262,7 @@ export default function ProjectOverview() {
                                             <div style={{
                                                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                                                 padding: '1rem 1.5rem',
-                                                borderBottom: index !== stats.toVerifyList.length - 1 ? '1px solid var(--border)' : 'none',
+                                                borderBottom: index !== page.length - 1 ? '1px solid var(--border)' : 'none',
                                                 transition: 'background 0.2s',
                                                 background: 'var(--surface)'
                                             }}
@@ -285,6 +293,8 @@ export default function ProjectOverview() {
                                         </a>
                                     ))}
                                 </div>
+                                <ListPagination page={toVerifyPage} totalItems={stats.toVerifyList.length} onChange={setToVerifyPage} />
+                                </>
                             ) : (
                                 <div className="card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
                                     <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
@@ -308,8 +318,9 @@ export default function ProjectOverview() {
                             </div>
 
                             {stats.toCallList.length > 0 ? (
+                                <>
                                 <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                                    {stats.toCallList.map((student: any, index: number) => (
+                                    {stats.toCallList.slice((toCallPage - 1) * LIST_PAGE_SIZE, toCallPage * LIST_PAGE_SIZE).map((student: any, index: number, page: any[]) => (
                                         <a
                                             key={student.id}
                                             href={`/dashboard/batch/${student.batch_id}`}
@@ -318,7 +329,7 @@ export default function ProjectOverview() {
                                             <div style={{
                                                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                                                 padding: '1rem 1.5rem',
-                                                borderBottom: index !== stats.toCallList.length - 1 ? '1px solid var(--border)' : 'none',
+                                                borderBottom: index !== page.length - 1 ? '1px solid var(--border)' : 'none',
                                                 transition: 'background 0.2s',
                                                 background: 'var(--surface)'
                                             }}
@@ -349,6 +360,8 @@ export default function ProjectOverview() {
                                         </a>
                                     ))}
                                 </div>
+                                <ListPagination page={toCallPage} totalItems={stats.toCallList.length} onChange={setToCallPage} />
+                                </>
                             ) : (
                                 <div className="card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
                                     <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📞</div>
@@ -643,5 +656,33 @@ export default function ProjectOverview() {
             )}
 
         </div >
+    )
+}
+
+// Keeps a long "pending X" list (can run into the hundreds) from turning the whole dashboard
+// into one endless scroll — shown only once a list has more than one page.
+function ListPagination({ page, totalItems, onChange }: { page: number; totalItems: number; onChange: (page: number) => void }) {
+    const totalPages = Math.max(1, Math.ceil(totalItems / LIST_PAGE_SIZE))
+    if (totalPages <= 1) return null
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
+            <button
+                className="btn btn-secondary"
+                disabled={page <= 1}
+                onClick={() => onChange(page - 1)}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+            >
+                <ChevronLeft size={16} /> Prev
+            </button>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Page {page} of {totalPages}</span>
+            <button
+                className="btn btn-secondary"
+                disabled={page >= totalPages}
+                onClick={() => onChange(page + 1)}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+            >
+                Next <ChevronRight size={16} />
+            </button>
+        </div>
     )
 }

@@ -117,7 +117,7 @@ router.post('/signup-profile', async (req, res) => {
             { upsert: true }
         )
 
-        const adminIds = await findUserIdsByRole(['ADMIN', 'SUB_ADMIN'])
+        const adminIds = await findUserIdsByRole(['ADMIN'])
         await notifyUsers({
             userIds: adminIds,
             type: 'new_user_approval',
