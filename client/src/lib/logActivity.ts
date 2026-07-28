@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient'
+import { API_BASE } from './api'
 
 // Ported from src/lib/logActivity.ts. Dropped the `typeof window !== 'undefined'` guards —
 // those were SSR-safety checks for Next.js; this is now a plain Vite SPA where this module
@@ -17,7 +18,7 @@ export async function logActivity(params: {
         const user_id = session?.user?.id || null
         const user_email = session?.user?.email || ''
 
-        await fetch('/api/log-activity', {
+        await fetch(`${API_BASE}/api/log-activity`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { Lock, User, AlertCircle, Phone, ArrowRight } from 'lucide-react'
 import styles from './page.module.css'
 import { supabase } from '@/lib/supabaseClient'
+import { API_BASE } from '@/lib/api'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -14,7 +15,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
 
   const completeLogin = async (accessToken: string, phone?: string) => {
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
       body: JSON.stringify(phone ? { phone } : {})

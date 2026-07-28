@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { API_BASE } from '@/lib/api'
 
 export interface DashboardFilters {
     range: string
@@ -73,8 +74,8 @@ export default function DashboardFilterBar({ filters, onChange, showRegion = tru
     const [schools, setSchools] = useState<any[]>([])
 
     useEffect(() => {
-        fetch('/api/regions').then(r => r.json()).then(d => setRegions(d.regions || [])).catch(() => {})
-        fetch('/api/schools').then(r => r.json()).then(d => setSchools(d.schools || [])).catch(() => {})
+        fetch(`${API_BASE}/api/regions`).then(r => r.json()).then(d => setRegions(d.regions || [])).catch(() => {})
+        fetch(`${API_BASE}/api/schools`).then(r => r.json()).then(d => setSchools(d.schools || [])).catch(() => {})
     }, [])
 
     return (

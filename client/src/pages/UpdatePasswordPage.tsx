@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabaseClient'
+import { API_BASE } from '@/lib/api'
 import { Lock, Phone, AlertCircle, Mail } from 'lucide-react'
 
 export default function UpdatePasswordPage() {
@@ -28,7 +29,7 @@ export default function UpdatePasswordPage() {
 
         const loadProfile = async (accessToken: string) => {
             try {
-                const res = await fetch('/api/auth/profile', { headers: { 'Authorization': `Bearer ${accessToken}` } })
+                const res = await fetch(`${API_BASE}/api/auth/profile`, { headers: { 'Authorization': `Bearer ${accessToken}` } })
                 const data = await res.json()
                 if (res.ok && data.profile) {
                     if (data.profile.role === 'SALES' && !data.profile.sales_id) {
@@ -68,7 +69,7 @@ export default function UpdatePasswordPage() {
             if (needsPhone && phone) {
                 const { data: { session } } = await supabase.auth.getSession()
                 if (session) {
-                    const res = await fetch('/api/auth/login', {
+                    const res = await fetch(`${API_BASE}/api/auth/login`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
                         body: JSON.stringify({ phone })

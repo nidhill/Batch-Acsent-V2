@@ -4,7 +4,7 @@ import { supabase } from './supabaseClient'
 // Next.js page/component (each one redefining the same "grab the Supabase session, prepend
 // a Bearer header" closure). API_BASE is empty in dev (Vite proxy) and in the single-process
 // production topology (same origin) — only needs a value if ever split into two services.
-const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+export const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
 
 export async function authedFetch(path: string, options: RequestInit = {}) {
     const { data: { session } } = await supabase.auth.getSession()

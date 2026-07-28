@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { authedFetch } from '@/lib/api'
+import { authedFetch, API_BASE } from '@/lib/api'
 import { UserPlus, Trash2, Filter, History, Search, UserX, UserCheck } from 'lucide-react'
 import { SCHOOLS, ROLES } from '@/lib/constants'
 
@@ -58,7 +58,7 @@ export default function UsersPage() {
 
     const fetchRegions = async () => {
         try {
-            const res = await fetch('/api/regions')
+            const res = await fetch(`${API_BASE}/api/regions`)
             const data = await res.json()
             setRegionsList(data.regions || [])
         } catch (err) {

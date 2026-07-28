@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { authedFetch } from '@/lib/api'
+import { authedFetch, API_BASE } from '@/lib/api'
 import { Save } from 'lucide-react'
 import { SCHOOLS } from '@/lib/constants'
 
@@ -54,7 +54,7 @@ export default function CreateBatchPage() {
     useEffect(() => {
         const fetchRegions = async () => {
             try {
-                const res = await fetch('/api/regions')
+                const res = await fetch(`${API_BASE}/api/regions`)
                 const data = await res.json()
                 setRegionsList(data.regions || [])
                 if (data.regions?.length === 1) {

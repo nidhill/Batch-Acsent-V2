@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabaseClient'
 import { Lock, User, Mail, Briefcase, School, ArrowLeft, AlertCircle } from 'lucide-react'
 import styles from './page.module.css'
 import { SCHOOLS } from '@/lib/constants'
+import { API_BASE } from '@/lib/api'
 
 const ALLOWED_ROLES = [
     { label: 'Sales Executive', value: 'SALES' },
@@ -28,7 +29,7 @@ export default function SignupPage() {
     useEffect(() => {
         const fetchSchools = async () => {
             try {
-                const res = await fetch('/api/schools')
+                const res = await fetch(`${API_BASE}/api/schools`)
                 const data = await res.json()
                 const schools = (data.schools || []).map((s: any) => ({ ...s, id: s._id }))
                 if (schools.length > 0) {
@@ -76,7 +77,7 @@ export default function SignupPage() {
 
             // 2. Create the Mongo profile (Status: PENDING)
             if (authData.user && authData.session) {
-                const res = await fetch('/api/auth/signup-profile', {
+                const res = await fetch(`${API_BASE}/api/auth/signup-profile`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authData.session.access_token}` },
                     body: JSON.stringify({
