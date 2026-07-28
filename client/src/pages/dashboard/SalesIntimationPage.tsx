@@ -19,6 +19,7 @@ export default function SalesIntimationPage() {
         gender: '',
         city: '',
         state: '',
+        region: '',
         admission_date: '',
         lead_creation_date: '',
         lead_source: searchParams.get('lead_source') || '',
@@ -43,6 +44,7 @@ export default function SalesIntimationPage() {
     })
 
     const [schoolsList, setSchoolsList] = useState<any[]>([])
+    const [regionsList, setRegionsList] = useState<any[]>([])
     const [batchesList, setBatchesList] = useState<any[]>([])
     const [userSchool, setUserSchool] = useState<string | null>(null)
     const [userRole, setUserRole] = useState<string | null>(null)
@@ -79,6 +81,10 @@ export default function SalesIntimationPage() {
                 if (schoolsData.schools) {
                     setSchoolsList(schoolsData.schools.map((s: any) => ({ ...s, id: s._id })))
                 }
+
+                const regionsRes = await authedFetch('/api/regions')
+                const regionsData = await regionsRes.json()
+                setRegionsList(regionsData.regions || [])
             } catch (err) {
                 console.error('Error initializing page:', err)
             }
@@ -198,6 +204,7 @@ export default function SalesIntimationPage() {
                     gender: formData.gender,
                     city: formData.city,
                     state: formData.state,
+                    region: formData.region,
                     lead_source: formData.lead_source,
                     lead_id: formData.lead_id || undefined,
                     admission_date: formData.admission_date,
@@ -242,7 +249,7 @@ export default function SalesIntimationPage() {
             setFormData({
                 student_name: '', contact_number: '', whatsapp_number: '', email: '',
                 address: '', guardian_name: '', guardian_contact: '',
-                age: '', gender: '', city: '', state: '',
+                age: '', gender: '', city: '', state: '', region: '',
                 admission_date: '', lead_creation_date: '', lead_source: '', lead_id: '',
                 school: userSchool || '', batch_code: '', sales_user_id: '',
                 discount: '0', scholarship: '0', payment_status: 'partial', payment_method: '',
@@ -373,6 +380,13 @@ export default function SalesIntimationPage() {
                         <div>
                             <label className="block mb-1 text-sm font-medium">State *</label>
                             <input type="text" name="state" className="input" required value={formData.state} onChange={handleChange} />
+                        </div>
+                        <div>
+                            <label className="block mb-1 text-sm font-medium">Region *</label>
+                            <select name="region" className="input" required value={formData.region} onChange={handleChange}>
+                                <option value="">Select Region</option>
+                                {regionsList.map(r => <option key={r._id} value={r.name}>{r.name}</option>)}
+                            </select>
                         </div>
                         <div>
                             <label className="block mb-1 text-sm font-medium">Date of Admission Confirmation *</label>

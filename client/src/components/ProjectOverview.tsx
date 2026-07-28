@@ -5,6 +5,8 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell
 } from 'recharts'
+import DashboardFilterBar, { rangeToDates } from '@/components/DashboardFilterBar'
+import type { DashboardFilters } from '@/components/DashboardFilterBar'
 
 const LIST_PAGE_SIZE = 10
 
@@ -17,12 +19,10 @@ interface Batch {
     name: string
 }
 
-import { SCHOOLS } from '@/lib/constants'
-
 export default function ProjectOverview() {
     const [batches, setBatches] = useState<Batch[]>([])
     const [loading, setLoading] = useState(true)
-    const [selectedSchool, setSelectedSchool] = useState<string>('All Schools')
+    const [filters, setFilters] = useState<DashboardFilters>({ range: 'this_month', region: '', school: '', course: '' })
     const [userRole, setUserRole] = useState<string | null>(null)
     const [stats, setStats] = useState({
         totalBatches: 0,
@@ -46,16 +46,19 @@ export default function ProjectOverview() {
     useEffect(() => {
         const role = localStorage.getItem('userRole')
         setUserRole(role)
-        fetchData(role, selectedSchool)
-        fetchRevenue()
+        fetchData(role, filters)
+        fetchRevenue(filters)
         setToVerifyPage(1)
         setToCallPage(1)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedSchool])
+    }, [filters.range, filters.school])
 
-    const fetchRevenue = async () => {
+    const fetchRevenue = async (activeFilters: DashboardFilters) => {
         try {
-            const res = await authedFetch('/api/analytics/overview')
+            const { from, to } = rangeToDates(activeFilters.range)
+            const params = new URLSearchParams({ from, to })
+            if (activeFilters.school) params.set('school', activeFilters.school)
+            const res = await authedFetch(`/api/analytics/overview?${params.toString()}`)
             const data = await res.json()
             if (res.ok) {
                 setRevenue(data.revenue)
@@ -66,7 +69,7 @@ export default function ProjectOverview() {
         }
     }
 
-    const fetchData = async (role: string | null, schoolFilter: string) => {
+    const fetchData = async (role: string | null, activeFilters: DashboardFilters) => {
         try {
             setLoading(true)
 
@@ -81,19 +84,22 @@ export default function ProjectOverview() {
             const [batchJson, usersJson] = await Promise.all([batchRes.json(), usersRes.json()])
 
             let batchesData: any[] = batchJson.batches || []
-            if ((role === 'CEO' || role === 'ADMIN') && schoolFilter !== 'All Schools') {
-                batchesData = batchesData.filter(b => b.school === schoolFilter)
+            if ((role === 'CEO' || role === 'ADMIN') && activeFilters.school) {
+                batchesData = batchesData.filter(b => b.school === activeFilters.school)
             }
             const usersData = (usersJson.users || []).filter((u: any) => u.sales_id)
 
-            // Enrollments depend on which batches came back above, so this one has to wait
+            // Enrollments depend on which batches came back above, so this one has to wait.
+            // Date-range-scoped ("This Month" by default) — the dashboard reports on the
+            // selected period's admissions, not an all-time cumulative total.
             let allBatches: Batch[] = []
             let allSalesIds: string[] = []
             let allEnrollments: any[] = []
 
             if (batchesData.length > 0) {
+                const { from, to } = rangeToDates(activeFilters.range)
                 const batchIds = batchesData.map(b => b.id)
-                const admissionsRes = await authedFetch(`/api/admissions?batch_ids=${batchIds.map(encodeURIComponent).join(',')}`)
+                const admissionsRes = await authedFetch(`/api/admissions?batch_ids=${batchIds.map(encodeURIComponent).join(',')}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`)
                 const admissionsJson = await admissionsRes.json()
                 const enrollments = admissionsJson.admissions || []
 
@@ -217,23 +223,11 @@ export default function ProjectOverview() {
 
     return (
         <div className="animate-fade-in">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                <h2 className="text-2xl font-bold" style={{ color: 'var(--primary)', margin: 0 }}>{timeGreeting}{userName ? `, ${userName}` : ''}</h2>
+            <h2 className="text-2xl font-bold" style={{ color: 'var(--primary)', margin: 0, marginBottom: '1.5rem' }}>{timeGreeting}{userName ? `, ${userName}` : ''}</h2>
 
-                {['CEO', 'ADMIN', 'BUSINESS_HEAD'].includes(userRole || '') && (
-                    <select
-                        value={selectedSchool}
-                        onChange={(e) => setSelectedSchool(e.target.value)}
-                        className="input"
-                        style={{ width: 'auto', minWidth: '200px' }}
-                    >
-                        <option value="All Schools">All Schools</option>
-                        {SCHOOLS.map(school => (
-                            <option key={school} value={school}>{school}</option>
-                        ))}
-                    </select>
-                )}
-            </div>
+            {['CEO', 'ADMIN', 'BUSINESS_HEAD'].includes(userRole || '') && (
+                <DashboardFilterBar filters={filters} onChange={setFilters} showRegion={false} showCourse={false} />
+            )}
 
             {/* KPI Cards / Verification List */}
             {showActionableStats ? (

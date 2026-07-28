@@ -21,6 +21,8 @@ router.get('/', authenticate, async (req, res, next) => {
         const batchIdsParam = req.query.batch_ids as string | undefined
         const salesId = req.query.sales_id as string | undefined
         const search = req.query.q as string | undefined
+        const from = req.query.from as string | undefined
+        const to = req.query.to as string | undefined
         const limit = parseInt((req.query.limit as string) || '0') || undefined
 
         const db = await getDb()
@@ -28,6 +30,11 @@ router.get('/', authenticate, async (req, res, next) => {
         if (batchId) filter.batch_id = batchId
         if (batchIdsParam) filter.batch_id = { $in: batchIdsParam.split(',').filter(Boolean) }
         if (salesId) filter.sales_id = salesId
+        if (from || to) {
+            filter.enrolled_at = {}
+            if (from) filter.enrolled_at.$gte = from
+            if (to) filter.enrolled_at.$lte = to
+        }
 
         if (search && can(profile.role, 'VIEW_ALL_SCHOOLS')) {
             const rx = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
@@ -85,7 +92,7 @@ router.post('/', authenticate, async (req, res, next) => {
 
         const {
             batch_id, student_name, student_email, student_phone, whatsapp_number, sales_id, sales_user_id,
-            age, gender, city, state,
+            age, gender, city, state, region,
             guardian_name, guardian_contact, address,
             lead_source, admission_date, lead_creation_date, lead_id,
             discount, scholarship, payment_status, payment_method, payment_channel,
@@ -95,7 +102,7 @@ router.post('/', authenticate, async (req, res, next) => {
         // transaction_number, receipt_number and remarks are the only fields that stay optional.
         const requiredFields: Record<string, any> = {
             batch_id, student_name, student_email, student_phone, whatsapp_number,
-            age, gender, city, state, guardian_name, guardian_contact, address,
+            age, gender, city, state, region, guardian_name, guardian_contact, address,
             lead_source, admission_date, lead_creation_date,
             payment_status, payment_method, payment_channel, amount_paid,
         }
@@ -185,7 +192,7 @@ router.post('/', authenticate, async (req, res, next) => {
             guardian_name: guardian_name || null,
             guardian_contact: guardian_contact || null,
             lead_id: lead_id || null,
-            region: batch.region || null,
+            region: region || batch.region || null,
             lead_source: lead_source || null,
             admission_date: admission_date || null,
             lead_creation_date: lead_creation_date || null,

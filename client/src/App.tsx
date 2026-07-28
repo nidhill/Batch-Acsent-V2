@@ -25,7 +25,6 @@ import StudentDetailPage from './pages/dashboard/StudentDetailPage'
 import LmsAccessPolicyPage from './pages/dashboard/LmsAccessPolicyPage'
 import ReportsPage from './pages/dashboard/ReportsPage'
 import ProfilePage from './pages/dashboard/ProfilePage'
-import LmsUsageReportPage from './pages/dashboard/LmsUsageReportPage'
 import BatchDetailPage from './pages/dashboard/BatchDetailPage'
 import BatchEditPage from './pages/dashboard/BatchEditPage'
 import SchoolsPage from './pages/dashboard/admin/SchoolsPage'
@@ -66,7 +65,6 @@ function App() {
           <Route path="lms-access-policy" element={<LmsAccessPolicyPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="lms-usage-report" element={<LmsUsageReportPage />} />
           <Route path="batch/:id" element={<BatchDetailPage />} />
           <Route path="batch/:id/edit" element={<BatchEditPage />} />
 

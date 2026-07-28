@@ -27,7 +27,6 @@ import adminUsersRouter from './routes/adminUsers'
 import webhooksRouter from './routes/webhooks'
 import cronRouter from './routes/cron'
 import proxyRouter from './routes/proxy'
-import lmsUsageRouter from './routes/lmsUsage'
 
 export function createApp() {
     const app = express()
@@ -72,7 +71,6 @@ export function createApp() {
     app.use('/api/webhooks', webhooksRouter)
     app.use('/api/cron', cronRouter)
     app.use('/api/proxy', proxyRouter)
-    app.use('/api/lms-usage', lmsUsageRouter)
 
     app.use('/api', notFoundHandler)
 

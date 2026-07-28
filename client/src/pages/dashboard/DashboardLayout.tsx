@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, Users, LogOut, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Menu, TrendingUp, History, Activity, ClipboardCheck, FileText, UserSearch, ShieldCheck, UserPlus, Target, BarChart3 } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, Users, LogOut, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Menu, TrendingUp, History, Activity, ClipboardCheck, FileText, UserSearch, ShieldCheck, UserPlus, Target } from 'lucide-react'
 import styles from './dashboard.module.css'
 import GlobalSearch from '@/components/GlobalSearch'
 import MiniCalendar from '@/components/MiniCalendar'
@@ -91,7 +91,6 @@ export default function DashboardLayout() {
         { label: 'Verification Queue', href: '/dashboard/verification-queue', icon: ClipboardCheck, roles: ['ACADEMIC_LEAD', 'ADMIN', 'CEO', 'SALES_HEAD'] },
         { label: 'Student 360°', href: '/dashboard/student-360', icon: UserSearch, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
         { label: 'LMS Access Policy', href: '/dashboard/lms-access-policy', icon: ShieldCheck, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
-        { label: 'LMS Usage Report', href: '/dashboard/lms-usage-report', icon: BarChart3, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
         { label: 'Reports', href: '/dashboard/reports', icon: FileText, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD', 'SALES_HEAD', 'ACADEMIC_LEAD'] },
         { label: 'Manage Schools & Courses', href: '/dashboard/admin/schools', icon: BookOpen, roles: ['ADMIN', 'CEO'] },
         { label: 'Manage Users', href: '/dashboard/admin/users', icon: Users, roles: ['ADMIN', 'CEO'] },
