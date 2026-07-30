@@ -1,0 +1,21 @@
+name: Sync Supabase to MongoDB
+
+# Keeps MongoDB caught up with the old Next.js app's still-live Supabase writes.
+# Hits the safe, insert-only /api/cron/sync-supabase endpoint on the Render
+# backend — never overwrites existing Mongo documents, only inserts rows
+# missing from Mongo. See server/src/lib/supabaseSync.ts for why.
+on:
+  schedule:
+    - cron: '*/20 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger sync-supabase
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -sf -X GET "https://batch-ascent-v2-backend.onrender.com/api/cron/sync-supabase" \
+            -H "Authorization: Bearer $CRON_SECRET"
