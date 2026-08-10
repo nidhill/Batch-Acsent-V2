@@ -14,9 +14,10 @@ export default function OverviewPage() {
     return (
         <div>
             {/* No page-title heading here — DashboardLayout's header bar already shows
-                "Overview", and ProjectOverview opens with a personalized greeting. */}
-            <ProjectOverview />
+                "Overview". Batch cards first (loads fast, most-used); analytics below
+                (slower to load — several chart queries). */}
             <BatchList />
+            <ProjectOverview />
         </div>
     )
 }
