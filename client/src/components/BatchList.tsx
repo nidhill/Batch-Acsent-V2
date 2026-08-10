@@ -61,7 +61,7 @@ export default function BatchList({ view = 'current' }: BatchListProps) {
         })
         .sort((a, b) => {
             if (sortBy === 'Date') {
-                return new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+                return new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
             } else {
                 const fillA = (a.enrolled_count || 0) / (a.strength || 1)
                 const fillB = (b.enrolled_count || 0) / (b.strength || 1)
