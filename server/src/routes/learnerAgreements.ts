@@ -205,6 +205,14 @@ router.get('/public/:admissionId', async (req, res, next) => {
             status: agreement.status,
             signedAt: agreement.signed_at || null,
             signatureName: agreement.signature_name || null,
+            admissionForm: agreement.admission_form || null,
+            prefill: {
+                fullName: admission.student_name || '',
+                email: admission.student_email || '',
+                contactNumber: admission.student_phone || '',
+                courseName: batch?.course || '',
+                modeOfStudy: batch?.mode || '',
+            },
         })
 
         if (agreement.status === 'sent') {
@@ -217,6 +225,32 @@ router.get('/public/:admissionId', async (req, res, next) => {
     }
 })
 
+// Mirrors the "HACA Learners Admission Form" fields (Sections 1-6 of the
+// source document). Required unconditionally; the "*Other" fields are only
+// required when their matching select is set to "Other".
+const REQUIRED_ADMISSION_FORM_FIELDS = [
+    'fullName', 'dateOfBirth', 'gender', 'contactNumber', 'email', 'address',
+    'highestQualification', 'institutionName', 'yearOfPassing',
+    'courseName', 'preferredBatchTiming', 'modeOfStudy',
+    'emergencyContactName', 'emergencyContactRelationship', 'emergencyContactNumber',
+    'registrationFeePaid', 'paymentMode',
+    'identityProofType', 'identityProofNumber', 'uploadCopyOfIdentityProof',
+] as const
+
+function validateAdmissionForm(form: any): string | null {
+    if (!form || typeof form !== 'object') return 'Please fill in the admission form.'
+    for (const field of REQUIRED_ADMISSION_FORM_FIELDS) {
+        if (!String(form[field] ?? '').trim()) return `Please fill in all admission form fields (missing: ${field}).`
+    }
+    if (form.paymentMode === 'Other' && !String(form.paymentModeOther ?? '').trim()) {
+        return 'Please specify the payment mode.'
+    }
+    if (form.identityProofType === 'Other' && !String(form.identityProofTypeOther ?? '').trim()) {
+        return 'Please specify the identity proof type.'
+    }
+    return null
+}
+
 // POST /api/learner-agreements/public/:admissionId/sign
 router.post('/public/:admissionId/sign', async (req, res, next) => {
     try {
@@ -224,6 +258,11 @@ router.post('/public/:admissionId/sign', async (req, res, next) => {
         const signatureName = String(req.body?.signatureName || '').trim()
         if (!signatureName) {
             res.status(400).json({ error: 'Please type your full name to sign' })
+            return
+        }
+        const formError = validateAdmissionForm(req.body?.admissionForm)
+        if (formError) {
+            res.status(400).json({ error: formError })
             return
         }
 
@@ -241,7 +280,7 @@ router.post('/public/:admissionId/sign', async (req, res, next) => {
         const now = new Date().toISOString()
         await db.collection('ba_learner_agreements').updateOne(
             { admission_id: admissionId },
-            { $set: { status: 'signed', signed_at: now, signature_name: signatureName } }
+            { $set: { status: 'signed', signed_at: now, signature_name: signatureName, admission_form: req.body.admissionForm } }
         )
 
         const admission = await db.collection('ba_admissions').findOne({ _id: admissionId as any })

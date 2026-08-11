@@ -27,17 +27,6 @@ const INTRO_SECTIONS: AgreementSection[] = [
             '— Team HACA',
         ],
     },
-    {
-        heading: 'HACA Learners Admission Form',
-        body: [
-            '1. Personal Details — Full Name: __________; Date of Birth: ________; Gender: ☐ Male ☐ Female ☐ Other; Contact Number: __________; Email Address: __________; Address: __________',
-            '2. Educational Background — Highest Qualification: __________; Institution Name: __________; Year of Passing: ________',
-            '3. Course Details — Course Name: __________; Preferred Batch Timing: ☐ Morning ☐ Evening ☐ Weekend; Mode of Study: ☐ Online ☐ Offline',
-            '4. Emergency Contact — Name: __________; Relationship: __________; Contact Number: __________',
-            '5. Payment Details — Registration Fee Paid: ☐ Yes ☐ No; Payment Mode: ☐ Cash ☐ Bank Transfer ☐ Other (Specify: _______)',
-            "6. Identity Proof — Type of Identity Proof: ☐ Aadhaar Card ☐ Passport ☐ Driver's License ☐ Voter ID ☐ Other (Specify: ________); Identity Proof Number: __________; Upload Copy of Identity Proof (if online submission): ☐ Yes ☐ No",
-        ],
-    },
 ]
 
 const CLOSING_SECTIONS: AgreementSection[] = [
