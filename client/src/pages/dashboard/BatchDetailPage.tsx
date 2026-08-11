@@ -776,6 +776,23 @@ export default function BatchDetailPage() {
                                                 Send Agreement
                                             </button>
                                         )}
+                                        {['SHO', 'SSHO', 'ACADEMIC_LEAD', 'ADMIN', 'CEO'].includes(userRole || '') && ['sent', 'opened'].includes(student.learner_agreement_status || '') && (
+                                            <button
+                                                onClick={async () => {
+                                                    try {
+                                                        const res = await authedFetch(`/api/learner-agreements/${student.id}/remind`, { method: 'POST' })
+                                                        const data = await res.json()
+                                                        if (!res.ok) throw new Error(data.error)
+                                                        alert('Reminder sent to ' + student.student_name)
+                                                    } catch (err: any) {
+                                                        alert('Error: ' + err.message)
+                                                    }
+                                                }}
+                                                style={{ fontSize: '0.7rem', color: 'var(--warning)', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}
+                                            >
+                                                Send Reminder
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
 

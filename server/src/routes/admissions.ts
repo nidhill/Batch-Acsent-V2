@@ -9,6 +9,7 @@ import { logMongoActivity } from '../lib/mongoActivity'
 import { getLmsAccessPolicy, evaluateLmsAccess } from '../lib/lmsAccessPolicy'
 import { getSupabaseAdmin, ensureDocumentsBucket, ADMISSION_DOCUMENTS_BUCKET } from '../lib/supabaseAdmin'
 import { isDisposableOrFakeEmail } from '../lib/emailValidation'
+import { sendLearnerAgreementEmail } from './learnerAgreements'
 
 const router = Router()
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } })
@@ -838,6 +839,11 @@ router.post('/:id/verify', authenticate, async (req, res, next) => {
             request: req, userId: authUserId, userName: profile.name, userEmail: profile.email, userRole: profile.role,
             action: 'STUDENT_VERIFIED', details: { student_name: admission.student_name, student_email: admission.student_email, batch_id: admission.batch_id },
         })
+
+        // Every verified student gets their Learner Agreement automatically —
+        // best-effort: a failed send here shouldn't block verification itself,
+        // staff can still use the manual "Send Agreement" button as a fallback.
+        sendLearnerAgreementEmail(id as string, authUserId).catch(err => console.error('[verify] auto-send learner agreement failed:', err))
 
         if (admission.sales_id) {
             const salesUser = await db.collection('ba_users').findOne({ $or: [{ _id: admission.sales_id as any }, { sales_id: admission.sales_id }] })

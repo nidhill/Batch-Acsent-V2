@@ -5,6 +5,7 @@ import SignupPage from './pages/SignupPage'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import UpdatePasswordPage from './pages/UpdatePasswordPage'
 import AuthCallbackPage from './pages/AuthCallbackPage'
+import AgreementPage from './pages/AgreementPage'
 
 import DashboardLayout from './pages/dashboard/DashboardLayout'
 import AdminGate from './pages/dashboard/AdminGate'
@@ -46,6 +47,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/update-password" element={<UpdatePasswordPage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        <Route path="/agreement/:admissionId" element={<AgreementPage />} />
 
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<OverviewPage />} />

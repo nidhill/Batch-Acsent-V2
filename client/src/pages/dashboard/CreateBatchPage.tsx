@@ -21,7 +21,8 @@ export default function CreateBatchPage() {
         school: '',
         mode: 'Offline',
         region: '',
-        course_fee: ''
+        course_fee: '',
+        course_type: ''
     })
     const [academicLeads, setAcademicLeads] = useState<any[]>([])
     const [availableSHOs, setAvailableSHOs] = useState<any[]>([])
@@ -279,6 +280,22 @@ export default function CreateBatchPage() {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                    <div>
+                        {/* Decides which Learner Agreement (main vs short course) gets sent to
+                            every student admitted into this batch once verified. */}
+                        <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Course Type *</label>
+                        <select
+                            name="course_type"
+                            className="input"
+                            required
+                            value={formData.course_type}
+                            onChange={handleChange}
+                        >
+                            <option value="">Select Course Type</option>
+                            <option value="main">Main Course</option>
+                            <option value="short">Short Course</option>
+                        </select>
+                    </div>
                     <div>
                         <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Orientation Date</label>
                         <input

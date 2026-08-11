@@ -220,6 +220,20 @@ export default function BatchEditPage() {
                                 ))}
                         </select>
                     </div>
+                    <div>
+                        <label className="label">Course Type</label>
+                        <select
+                            name="course_type"
+                            className="input"
+                            value={formData.course_type || ''}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">Select Course Type</option>
+                            <option value="main">Main Course</option>
+                            <option value="short">Short Course</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>

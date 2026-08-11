@@ -58,10 +58,14 @@ router.post('/', authenticate, async (req, res, next) => {
             return
         }
 
-        const { id, name, course, start_date, end_date, orientation_date, sho_name, academic_lead, strength, school, mode, cliq_id, region, course_fee } = req.body
+        const { id, name, course, course_type, start_date, end_date, orientation_date, sho_name, academic_lead, strength, school, mode, cliq_id, region, course_fee } = req.body
 
-        if (!id || !name || !course || !start_date || !school || !region || course_fee === undefined || course_fee === '') {
-            res.status(400).json({ error: 'id, name, course, start_date, school, region and course_fee are required' })
+        if (!id || !name || !course || !course_type || !start_date || !school || !region || course_fee === undefined || course_fee === '') {
+            res.status(400).json({ error: 'id, name, course, course_type, start_date, school, region and course_fee are required' })
+            return
+        }
+        if (!['main', 'short'].includes(course_type)) {
+            res.status(400).json({ error: 'course_type must be "main" or "short"' })
             return
         }
 
@@ -78,6 +82,7 @@ router.post('/', authenticate, async (req, res, next) => {
             _id: cleanId as any,
             name,
             course,
+            course_type,
             start_date,
             end_date: end_date || null,
             orientation_date: orientation_date || null,
