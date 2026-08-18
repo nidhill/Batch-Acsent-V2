@@ -215,7 +215,7 @@ export default function ProjectOverview() {
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
     // Admin/CEO/Business Head get the full BI dashboard (KPI cards, revenue, charts) per
     // SRS Docs 2-3; SHO/SSHO/Sales Head/Academic Lead get the operational to-do list instead.
-    const showActionableStats = ['SHO', 'SSHO', 'SALES_HEAD', 'ACADEMIC_LEAD'].includes(userRole || '')
+    const showActionableStats = ['SALES_HEAD', 'ACADEMIC_LEAD'].includes(userRole || '')
 
     const userName = localStorage.getItem('userName') || ''
     const greetingHour = new Date().getHours()
@@ -299,10 +299,10 @@ export default function ProjectOverview() {
                         </>
                     )}
 
-                    {/* SHO / SSHO / ADMIN / CEO / Academic Lead: See Pending Calls. Sales Head is
-                        deliberately excluded — SRS Doc 3 §"Remove Operational Features" says
-                        calling/onboarding must NOT appear on the Sales Head dashboard. */}
-                    {['SHO', 'SSHO', 'ADMIN', 'CEO', 'ACADEMIC_LEAD'].includes(userRole || '') && (
+                    {/* ADMIN / CEO / Academic Lead: See Pending Calls. Sales Head is deliberately
+                        excluded — SRS Doc 3 §"Remove Operational Features" says calling/onboarding
+                        must NOT appear on the Sales Head dashboard. SHO/SSHO moved to the SHO app. */}
+                    {['ADMIN', 'CEO', 'ACADEMIC_LEAD'].includes(userRole || '') && (
                         <>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
                                 <h3 style={{ fontSize: '1.05rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--text-primary)' }}>

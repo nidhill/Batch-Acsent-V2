@@ -61,6 +61,14 @@ export default function DashboardLayout() {
                 localStorage.removeItem('userRole')
             }
             navigate('/')
+        } else if (storedRole === 'SHO' || storedRole === 'SSHO') {
+            // SHO/SSHO workflows (calling students, learner agreements, adding students to a
+            // batch) have moved to the SHO app now that it syncs from Batch Ascent V2 in
+            // real time — there's nothing left for these roles to do here.
+            localStorage.removeItem('userRole')
+            localStorage.removeItem('userName')
+            alert('This has moved to the SHO app. Please use the SHO app to continue — Batch Ascent no longer has SHO/SSHO features.')
+            navigate('/')
         } else {
             setRole(storedRole)
             setUserName(localStorage.getItem('userName') || 'User')
@@ -78,7 +86,7 @@ export default function DashboardLayout() {
     const expanded = !isCollapsed || isMobileOpen
 
     const navItems = [
-        { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, roles: ['SHO', 'ACADEMIC_LEAD', 'ADMIN', 'BUSINESS_HEAD', 'SSHO', 'SALES_HEAD', 'CEO'] },
+        { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, roles: ['ACADEMIC_LEAD', 'ADMIN', 'BUSINESS_HEAD', 'SALES_HEAD', 'CEO'] },
         { label: 'Executive Dashboard', href: '/dashboard/ceo', icon: Target, roles: ['CEO'] },
         { label: 'AL Dashboard', href: '/dashboard/academic-lead', icon: ClipboardCheck, roles: ['ACADEMIC_LEAD'] },
         { label: 'Status', href: '/dashboard/status', icon: TrendingUp, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
@@ -86,7 +94,7 @@ export default function DashboardLayout() {
         { label: 'Leads', href: '/dashboard/leads', icon: UserPlus, roles: ['SALES', 'SALES_HEAD', 'ADMIN', 'CEO'] },
         { label: 'Student Admission', href: '/dashboard/sales/intimation', icon: PlusCircle, roles: ['SALES', 'SALES_HEAD', 'ADMIN', 'CEO'] },
         { label: 'Batches', href: '/dashboard/batches', icon: BookOpen, roles: ['BUSINESS_HEAD', 'CEO', 'SALES_HEAD', 'ADMIN'] },
-        { label: 'Past Batches', href: '/dashboard/past-batches', icon: History, roles: ['ACADEMIC_LEAD', 'SHO', 'SALES_HEAD', 'ADMIN', 'CEO'] },
+        { label: 'Past Batches', href: '/dashboard/past-batches', icon: History, roles: ['ACADEMIC_LEAD', 'SALES_HEAD', 'ADMIN', 'CEO'] },
         { label: 'Create Batch', href: '/dashboard/create-batch', icon: PlusCircle, roles: ['ACADEMIC_LEAD', 'ADMIN', 'CEO'] },
         { label: 'Verification Queue', href: '/dashboard/verification-queue', icon: ClipboardCheck, roles: ['ACADEMIC_LEAD', 'ADMIN', 'CEO', 'SALES_HEAD'] },
         { label: 'Student 360°', href: '/dashboard/student-360', icon: UserSearch, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },

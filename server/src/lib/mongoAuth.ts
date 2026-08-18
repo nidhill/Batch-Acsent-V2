@@ -67,6 +67,13 @@ export async function requireUser(authHeader: string | undefined | null): Promis
         throw new AuthError('Your account has been deactivated. Contact your administrator.', 403)
     }
 
+    // SHO/SSHO workflows moved to the SHO app now that it syncs from Batch Ascent V2 in real
+    // time — blocked here (not just in the login route or client UI) so no API endpoint can be
+    // reached with a valid SHO/SSHO session, even by calling it directly.
+    if (profile.role === 'SHO' || profile.role === 'SSHO') {
+        throw new AuthError('This has moved to the SHO app. Please use the SHO app to continue — Batch Ascent no longer has SHO/SSHO features.', 403)
+    }
+
     return { authUserId: user.id, authEmail: user.email ?? null, profile }
 }
 

@@ -38,6 +38,9 @@ router.post('/login', authenticate, async (req, res, next) => {
             return
         }
 
+        // SHO/SSHO are already rejected earlier, in requireUser() (mongoAuth.ts) — that covers
+        // every authenticated route, not just this one, so no separate check is needed here.
+
         const db = await getDb()
 
         if (profile.role === 'SALES' && !profile.phone && !phone) {

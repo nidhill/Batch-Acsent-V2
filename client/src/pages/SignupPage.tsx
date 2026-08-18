@@ -6,10 +6,10 @@ import styles from './page.module.css'
 import { SCHOOLS } from '@/lib/constants'
 import { API_BASE } from '@/lib/api'
 
+// SHO/SSHO removed — their workflows now live in the SHO app, so new signups
+// for those roles in Batch Ascent V2 no longer make sense.
 const ALLOWED_ROLES = [
     { label: 'Sales Executive', value: 'SALES' },
-    { label: 'SHO', value: 'SHO' },
-    { label: 'SSHO', value: 'SSHO' },
     { label: 'Sales Head', value: 'SALES_HEAD' },
     { label: 'Academic Lead', value: 'ACADEMIC_LEAD' },
     { label: 'Business Head', value: 'BUSINESS_HEAD' }

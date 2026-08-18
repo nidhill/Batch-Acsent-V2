@@ -8,7 +8,7 @@ import { getAgreementHtml, getAgreementSections, courseTypeLabel, type CourseTyp
 
 const router = Router()
 const VALID = ['opened', 'signed']
-const SEND_ROLES = ['ADMIN', 'CEO', 'SHO', 'SSHO', 'ACADEMIC_LEAD'] as const
+const SEND_ROLES = ['ADMIN', 'CEO', 'ACADEMIC_LEAD'] as const
 
 function agreementLink(admissionId: string) {
     const appUrl = process.env.APP_URL || ''

@@ -345,8 +345,8 @@ export default function BatchDetailPage() {
         // Admins/CEO
         if (['ADMIN', 'CEO'].includes(userRole)) return true
 
-        // Sales Head / SHO (School Match)
-        if (['SALES_HEAD', 'SHO', 'SSHO'].includes(userRole)) {
+        // Sales Head (School Match)
+        if (['SALES_HEAD'].includes(userRole)) {
             return batch?.school === userSchool
         }
 
@@ -606,7 +606,7 @@ export default function BatchDetailPage() {
                         Enrolled Students ({students.length})
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        {['ADMIN', 'CEO', 'ACADEMIC_LEAD', 'SHO', 'SSHO', 'SALES_HEAD'].includes(userRole || '') && (
+                        {['ADMIN', 'CEO', 'ACADEMIC_LEAD', 'SALES_HEAD'].includes(userRole || '') && (
                             <button
                                 onClick={() => setShowAddModal(true)}
                                 className="btn btn-primary"
@@ -755,7 +755,7 @@ export default function BatchDetailPage() {
                                         }}>
                                             Agreement: {(student.learner_agreement_status || 'not_sent').replace('_', ' ')}
                                         </span>
-                                        {['SHO', 'SSHO', 'ACADEMIC_LEAD', 'ADMIN', 'CEO'].includes(userRole || '') && student.learner_agreement_status === 'not_sent' && (
+                                        {['ACADEMIC_LEAD', 'ADMIN', 'CEO'].includes(userRole || '') && student.learner_agreement_status === 'not_sent' && (
                                             <button
                                                 onClick={async () => {
                                                     try {
@@ -776,7 +776,7 @@ export default function BatchDetailPage() {
                                                 Send Agreement
                                             </button>
                                         )}
-                                        {['SHO', 'SSHO', 'ACADEMIC_LEAD', 'ADMIN', 'CEO'].includes(userRole || '') && ['sent', 'opened'].includes(student.learner_agreement_status || '') && (
+                                        {['ACADEMIC_LEAD', 'ADMIN', 'CEO'].includes(userRole || '') && ['sent', 'opened'].includes(student.learner_agreement_status || '') && (
                                             <button
                                                 onClick={async () => {
                                                     try {
@@ -868,7 +868,7 @@ export default function BatchDetailPage() {
                                                         To Call
                                                     </div>
 
-                                                    {['SHO', 'SSHO', 'ADMIN', 'CEO', 'ACADEMIC_LEAD', 'SALES_HEAD'].includes(userRole || '') && (
+                                                    {['ADMIN', 'CEO', 'ACADEMIC_LEAD', 'SALES_HEAD'].includes(userRole || '') && (
                                                         <button
                                                             onClick={() => handleCallStudent(student.id, student.student_phone)}
                                                             className="hover:scale-105 active:scale-95"
@@ -932,7 +932,7 @@ export default function BatchDetailPage() {
                                                         </div>
 
                                                         {/* Action: Mark Done or Undo */}
-                                                        {['SHO', 'SSHO', 'ADMIN', 'CEO', 'ACADEMIC_LEAD', 'SALES_HEAD'].includes(userRole || '') && (
+                                                        {['ADMIN', 'CEO', 'ACADEMIC_LEAD', 'SALES_HEAD'].includes(userRole || '') && (
                                                             <button
                                                                 onClick={() => handleCallStudent(student.id, '', true)}
                                                                 style={{
