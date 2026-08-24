@@ -258,8 +258,8 @@ export default function BatchDetailPage() {
         }
     }
 
-    const handleDeleteStudent = async (studentId: string, email: string) => {
-        if (!confirm('Are you sure you want to remove this student? This action cannot be undone.')) return
+    const handleDeleteStudent = async (studentId: string, email: string, name: string) => {
+        if (!confirm(`Remove ${name} from this batch? This cannot be undone.`)) return
 
         try {
             const res = await authedFetch(`/api/admissions/${studentId}`, { method: 'DELETE' })
@@ -842,7 +842,7 @@ export default function BatchDetailPage() {
                                                         <MoveRight size={12} /> Transfer
                                                     </button>
                                                     <button
-                                                        onClick={() => handleDeleteStudent(student.id, student.student_email)}
+                                                        onClick={() => handleDeleteStudent(student.id, student.student_email, student.student_name)}
                                                         style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--error)', background: 'transparent', border: '1px solid var(--error-border)', padding: '0.375rem 0.75rem', borderRadius: '0.375rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.375rem' }}
                                                         title="Remove Student"
                                                     >
@@ -895,7 +895,7 @@ export default function BatchDetailPage() {
                                                                 <MoveRight size={12} /> Transfer
                                                             </button>
                                                             <button
-                                                                onClick={() => handleDeleteStudent(student.id, student.student_email)}
+                                                                onClick={() => handleDeleteStudent(student.id, student.student_email, student.student_name)}
                                                                 style={{ fontSize: '0.75rem', fontWeight: '600', color: 'var(--error)', background: 'transparent', border: '1px solid var(--error-border)', padding: '0.375rem 0.75rem', borderRadius: '0.375rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.375rem' }}
                                                                 title="Remove Student"
                                                             >
@@ -968,7 +968,7 @@ export default function BatchDetailPage() {
                                                                 <MoveRight size={12} /> Transfer
                                                             </button>
                                                             <button
-                                                                onClick={() => handleDeleteStudent(student.id, student.student_email)}
+                                                                onClick={() => handleDeleteStudent(student.id, student.student_email, student.student_name)}
                                                                 style={{ fontSize: '0.75rem', fontWeight: '600', color: 'white', background: 'var(--error, #ef4444)', border: 'none', padding: '0.375rem 0.75rem', borderRadius: '0.375rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.375rem' }}
                                                             >
                                                                 <Trash2 size={12} /> Remove

@@ -97,7 +97,7 @@ export default function BatchEditPage() {
     }
 
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to delete this batch? This action cannot be undone and will remove all student enrollments associated with this batch.')) {
+        if (!confirm(`Delete "${formData?.name}"? This cannot be undone and removes all student enrollments in this batch.`)) {
             return
         }
 

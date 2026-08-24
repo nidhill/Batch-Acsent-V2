@@ -155,8 +155,8 @@ export default function SalesBatchDetailPage() {
         }
     }
 
-    const handleDeleteStudent = async (studentId: string, email: string) => {
-        if (!confirm('Are you sure you want to remove this student? This action cannot be undone.')) return
+    const handleDeleteStudent = async (studentId: string, email: string, name: string) => {
+        if (!confirm(`Remove ${name} from this batch? This cannot be undone.`)) return
 
         try {
             const res = await authedFetch(`/api/admissions/${studentId}`, { method: 'DELETE' })
@@ -429,7 +429,7 @@ export default function SalesBatchDetailPage() {
 
                                     {((!student.verified_at && student.status !== 'Verified') || ['SALES_HEAD', 'ACADEMIC_LEAD'].includes(userRole || '')) && (
                                         <button
-                                            onClick={() => handleDeleteStudent(student.id, student.student_email)}
+                                            onClick={() => handleDeleteStudent(student.id, student.student_email, student.student_name)}
                                             style={{
                                                 background: 'rgba(239, 68, 68, 0.1)',
                                                 border: 'none',
@@ -610,7 +610,7 @@ export default function SalesBatchDetailPage() {
                                     )}
                                     {((!student.verified_at && student.status !== 'Verified') || ['SALES_HEAD', 'ACADEMIC_LEAD'].includes(userRole || '')) && (
                                         <button
-                                            onClick={() => handleDeleteStudent(student.id, student.student_email)}
+                                            onClick={() => handleDeleteStudent(student.id, student.student_email, student.student_name)}
                                             style={{
                                                 background: 'rgba(239, 68, 68, 0.1)',
                                                 border: 'none',
