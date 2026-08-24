@@ -93,7 +93,7 @@ export default function DashboardLayout() {
         { label: 'Sales Dashboard', href: '/dashboard/sales', icon: Users, roles: ['SALES', 'SALES_HEAD', 'ADMIN', 'CEO', 'BUSINESS_HEAD'] },
         { label: 'Leads', href: '/dashboard/leads', icon: UserPlus, roles: ['SALES', 'ADMIN', 'CEO'] },
         { label: 'Student Admission', href: '/dashboard/sales/intimation', icon: PlusCircle, roles: ['SALES', 'ADMIN', 'CEO'] },
-        { label: 'Batches', href: '/dashboard/batches', icon: BookOpen, roles: ['BUSINESS_HEAD', 'CEO', 'SALES_HEAD', 'ADMIN'] },
+        { label: 'Upcoming Batches', href: '/dashboard/batches', icon: BookOpen, roles: ['BUSINESS_HEAD', 'CEO', 'SALES_HEAD', 'ADMIN'] },
         { label: 'Past Batches', href: '/dashboard/past-batches', icon: History, roles: ['ACADEMIC_LEAD', 'SALES_HEAD', 'ADMIN', 'CEO'] },
         { label: 'Create Batch', href: '/dashboard/create-batch', icon: PlusCircle, roles: ['ACADEMIC_LEAD', 'ADMIN', 'CEO'] },
         { label: 'Verification Queue', href: '/dashboard/verification-queue', icon: ClipboardCheck, roles: ['ACADEMIC_LEAD', 'ADMIN', 'CEO', 'SALES_HEAD'] },
