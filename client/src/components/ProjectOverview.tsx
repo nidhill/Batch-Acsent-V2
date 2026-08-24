@@ -114,6 +114,24 @@ export default function ProjectOverview() {
             setBatches(allBatches)
             calculateStats(allBatches, allSalesIds, usersData, allEnrollments)
 
+            // "Pending Verifications" is meant to match the real Verification Queue page
+            // exactly (same source, no date-range scoping) — it used to be computed from
+            // the "This Month" enrollments above, which made the two disagree and confused
+            // users when Overview said "All Caught Up" while the actual queue had items
+            // from earlier months. Pull from the same endpoint the queue page itself uses.
+            if (['SALES_HEAD', 'ADMIN', 'CEO'].includes(role || '')) {
+                try {
+                    const vqRes = await authedFetch('/api/verification-queue')
+                    const vqJson = await vqRes.json()
+                    if (vqRes.ok) {
+                        const items = vqJson.items || []
+                        setStats(prev => ({ ...prev, toVerifyList: items, toVerifyCount: items.length }))
+                    }
+                } catch (err) {
+                    console.error('Error fetching verification queue count:', err)
+                }
+            }
+
         } catch (error) {
             console.error('Error fetching stats:', error)
         } finally {
