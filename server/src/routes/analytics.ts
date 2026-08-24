@@ -239,23 +239,12 @@ router.get('/overview', authenticate, async (req, res, next) => {
         const pendingVerification = admissions.length - verifiedCount - admissions.filter(a => a.status === 'Rejected').length
         const pendingOnboarding = admissions.filter(a => (a.verified_at || a.status === 'Verified') && !a.onboarding_completed).length
 
-        // ---- LMS active students + learner agreement status summary (Doc 2 §9 "Student
-        // Lifecycle Analytics") ----
+        // ---- LMS active students (Doc 2 §9 "Student Lifecycle Analytics") ----
         let lmsActiveCount = 0
-        const agreementStatusCounts: Record<string, number> = { not_sent: 0, sent: 0, opened: 0, signed: 0 }
         if (admissionIds.length > 0) {
-            const [allPayments, agreements] = await Promise.all([
-                db.collection('ba_payments').find({ admission_id: { $in: admissionIds } }).toArray(),
-                db.collection('ba_learner_agreements').find({ admission_id: { $in: admissionIds } }).toArray(),
-            ])
+            const allPayments = await db.collection('ba_payments').find({ admission_id: { $in: admissionIds } }).toArray()
             const lmsPolicy = await getLmsAccessPolicy()
             lmsActiveCount = allPayments.filter(p => evaluateLmsAccess(lmsPolicy, p as any)).length
-
-            const agreementMap = new Map(agreements.map(ag => [ag.admission_id, ag.status]))
-            admissionIds.forEach(id => {
-                const status = agreementMap.get(id) || 'not_sent'
-                agreementStatusCounts[status] = (agreementStatusCounts[status] || 0) + 1
-            })
         }
 
         res.json({
@@ -274,7 +263,6 @@ router.get('/overview', authenticate, async (req, res, next) => {
                 active_users: activeUsers,
                 lms_active_students: lmsActiveCount,
             },
-            learner_agreement_status_counts: agreementStatusCounts,
             revenue: canSeeRevenue ? revenue : null,
             revenue_by_region: canSeeRevenue ? revenueByRegion : null,
             revenue_by_school: canSeeRevenue ? revenueBySchool : null,

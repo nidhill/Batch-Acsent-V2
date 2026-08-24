@@ -9,7 +9,6 @@ import { logMongoActivity } from '../lib/mongoActivity'
 import { getLmsAccessPolicy, evaluateLmsAccess } from '../lib/lmsAccessPolicy'
 import { getSupabaseAdmin, ensureDocumentsBucket, ADMISSION_DOCUMENTS_BUCKET } from '../lib/supabaseAdmin'
 import { isDisposableOrFakeEmail } from '../lib/emailValidation'
-import { sendLearnerAgreementEmail } from './learnerAgreements'
 
 const router = Router()
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } })
@@ -380,10 +379,9 @@ router.get('/:id', authenticate, async (req, res, next) => {
             return
         }
 
-        const [batch, payment, agreement, logs] = await Promise.all([
+        const [batch, payment, logs] = await Promise.all([
             db.collection('ba_batches').findOne({ _id: admission.batch_id }),
             db.collection('ba_payments').findOne({ admission_id: id }),
-            db.collection('ba_learner_agreements').findOne({ admission_id: id }),
             db.collection('ba_activity_logs')
                 .find({ $or: [{ 'details.admission_id': id }, { 'details.student_email': admission.student_email }] })
                 .sort({ created_at: -1 })
@@ -403,7 +401,6 @@ router.get('/:id', authenticate, async (req, res, next) => {
             payment: canSeePayments ? payment : null,
             payment_clearance_status: payment ? (payment.remaining_amount <= 0 ? 'Cleared' : 'Pending') : 'Restricted',
             transactions: canSeePayments ? transactions : [],
-            learner_agreement: agreement ? { ...agreement, id: agreement._id } : { status: 'not_sent' },
             activity: logs,
             lms_access_granted: evaluateLmsAccess(lmsPolicy, payment as any),
             lms_access_policy: lmsPolicy,
@@ -839,11 +836,6 @@ router.post('/:id/verify', authenticate, async (req, res, next) => {
             request: req, userId: authUserId, userName: profile.name, userEmail: profile.email, userRole: profile.role,
             action: 'STUDENT_VERIFIED', details: { student_name: admission.student_name, student_email: admission.student_email, batch_id: admission.batch_id },
         })
-
-        // Every verified student gets their Learner Agreement automatically —
-        // best-effort: a failed send here shouldn't block verification itself,
-        // staff can still use the manual "Send Agreement" button as a fallback.
-        sendLearnerAgreementEmail(id as string, authUserId).catch(err => console.error('[verify] auto-send learner agreement failed:', err))
 
         if (admission.sales_id) {
             const salesUser = await db.collection('ba_users').findOne({ $or: [{ _id: admission.sales_id as any }, { sales_id: admission.sales_id }] })

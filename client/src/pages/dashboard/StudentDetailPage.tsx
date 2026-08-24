@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { authedFetch } from '@/lib/api'
-import { ArrowLeft, User, Mail, Phone, MapPin, Calendar, IndianRupee, FileSignature, Activity, Paperclip } from 'lucide-react'
+import { ArrowLeft, User, Mail, Phone, MapPin, Calendar, IndianRupee, Activity, Paperclip } from 'lucide-react'
 
 const badge = (bg: string, color: string) => ({
     padding: '0.25rem 0.7rem', borderRadius: '999px', fontSize: '0.72rem', fontWeight: 600,
@@ -42,15 +42,7 @@ export default function StudentDetailPage() {
     if (error) return <div className="card" style={{ padding: '2rem', textAlign: 'center', color: 'var(--error)' }}>{error}</div>
     if (!data) return null
 
-    const { admission: a, batch, payment, payment_clearance_status, transactions, learner_agreement, activity, lms_access_granted } = data
-
-    const agreementBadge: Record<string, { bg: string; color: string; label: string }> = {
-        not_sent: { bg: 'var(--secondary-light)', color: 'var(--text-secondary)', label: 'Not Sent' },
-        sent: { bg: 'var(--info-light)', color: 'var(--info)', label: 'Sent' },
-        opened: { bg: 'var(--warning-light)', color: 'var(--warning)', label: 'Opened' },
-        signed: { bg: 'var(--success-light)', color: 'var(--success)', label: 'Signed' },
-    }
-    const ag = agreementBadge[learner_agreement?.status || 'not_sent']
+    const { admission: a, batch, payment, payment_clearance_status, transactions, activity, lms_access_granted } = data
 
     const clearanceColors: Record<string, { bg: string; color: string }> = {
         Cleared: { bg: 'var(--success-light)', color: 'var(--success)' },
@@ -81,7 +73,6 @@ export default function StudentDetailPage() {
                         {a.status || 'Pending'}
                     </span>
                     <span style={badge(cc.bg, cc.color)}>Payment: {payment_clearance_status}</span>
-                    <span style={badge(ag.bg, ag.color)}>Agreement: {ag.label}</span>
                     {a.onboarding_completed && <span style={badge('var(--info-light)', 'var(--info)')}>Onboarded</span>}
                     <span style={badge(lms_access_granted ? 'var(--success-light)' : 'var(--error-light)', lms_access_granted ? 'var(--success)' : 'var(--error)')}>
                         LMS Access: {lms_access_granted ? 'Granted' : 'Restricted'}

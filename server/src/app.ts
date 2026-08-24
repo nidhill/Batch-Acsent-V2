@@ -10,7 +10,6 @@ import coursesRouter from './routes/courses'
 import schoolsRouter from './routes/schools'
 import usersRouter from './routes/users'
 import leadsRouter from './routes/leads'
-import learnerAgreementsRouter from './routes/learnerAgreements'
 import batchTransferRequestsRouter from './routes/batchTransferRequests'
 import linkStudentRouter from './routes/linkStudent'
 import regionsRouter from './routes/regions'
@@ -54,7 +53,6 @@ export function createApp() {
     app.use('/api/schools', schoolsRouter)
     app.use('/api/users', usersRouter)
     app.use('/api/leads', leadsRouter)
-    app.use('/api/learner-agreements', learnerAgreementsRouter)
     app.use('/api/batch-transfer-requests', batchTransferRequestsRouter)
     app.use('/api/link-student', linkStudentRouter)
     app.use('/api/regions', regionsRouter)

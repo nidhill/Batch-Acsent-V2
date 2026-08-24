@@ -281,8 +281,10 @@ export default function CreateBatchPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                     <div>
-                        {/* Decides which Learner Agreement (main vs short course) gets sent to
-                            every student admitted into this batch once verified. */}
+                        {/* Read by the SHO app (same MongoDB cluster) to decide which Learner
+                            Agreement (main vs short course) a student gets — Batch Ascent V2 no
+                            longer sends agreements itself, but this field is still the source
+                            of truth SHO app looks up by batch code. Keep it required. */}
                         <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', marginBottom: '0.5rem' }}>Course Type *</label>
                         <select
                             name="course_type"

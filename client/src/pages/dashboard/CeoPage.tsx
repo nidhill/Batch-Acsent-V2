@@ -160,7 +160,6 @@ export default function CeoPage() {
                         <div>Pending Onboarding: <strong>{t.pending_onboarding ?? 0}</strong></div>
                         <div>Onboarded Students: <strong>{t.onboarded ?? 0}</strong></div>
                         <div>LMS Active Students: <strong>{t.lms_active_students ?? 0}</strong></div>
-                        <div>Agreement Signed: <strong>{data.learner_agreement_status_counts?.signed ?? 0}</strong> / {Object.values(data.learner_agreement_status_counts || {}).reduce((s: number, v: any) => s + v, 0)}</div>
                     </div>
                 </div>
                 {data.payment_status_counts && (

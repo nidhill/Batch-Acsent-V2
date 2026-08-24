@@ -21,7 +21,6 @@ interface Student {
     status?: string
     called_at?: string
     payment_clearance_status?: 'Cleared' | 'Pending' | 'Restricted'
-    learner_agreement_status?: 'not_sent' | 'sent' | 'opened' | 'signed'
 }
 
 interface Batch {
@@ -748,51 +747,6 @@ export default function BatchDetailPage() {
                                         }}>
                                             Payment: {student.payment_clearance_status}
                                         </span>
-                                        <span style={{
-                                            fontSize: '0.7rem', fontWeight: 600, padding: '0.1rem 0.5rem', borderRadius: '999px',
-                                            background: student.learner_agreement_status === 'signed' ? 'var(--success-light)' : student.learner_agreement_status === 'not_sent' ? 'var(--secondary-light)' : 'var(--info-light)',
-                                            color: student.learner_agreement_status === 'signed' ? 'var(--success)' : student.learner_agreement_status === 'not_sent' ? 'var(--text-secondary)' : 'var(--info)',
-                                        }}>
-                                            Agreement: {(student.learner_agreement_status || 'not_sent').replace('_', ' ')}
-                                        </span>
-                                        {['ACADEMIC_LEAD', 'ADMIN', 'CEO'].includes(userRole || '') && student.learner_agreement_status === 'not_sent' && (
-                                            <button
-                                                onClick={async () => {
-                                                    try {
-                                                        const res = await authedFetch('/api/learner-agreements', {
-                                                            method: 'POST',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify({ admission_id: student.id })
-                                                        })
-                                                        const data = await res.json()
-                                                        if (!res.ok) throw new Error(data.error)
-                                                        setStudents(prev => prev.map(s => s.id === student.id ? { ...s, learner_agreement_status: 'sent' } : s))
-                                                    } catch (err: any) {
-                                                        alert('Error: ' + err.message)
-                                                    }
-                                                }}
-                                                style={{ fontSize: '0.7rem', color: 'var(--primary)', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}
-                                            >
-                                                Send Agreement
-                                            </button>
-                                        )}
-                                        {['ACADEMIC_LEAD', 'ADMIN', 'CEO'].includes(userRole || '') && ['sent', 'opened'].includes(student.learner_agreement_status || '') && (
-                                            <button
-                                                onClick={async () => {
-                                                    try {
-                                                        const res = await authedFetch(`/api/learner-agreements/${student.id}/remind`, { method: 'POST' })
-                                                        const data = await res.json()
-                                                        if (!res.ok) throw new Error(data.error)
-                                                        alert('Reminder sent to ' + student.student_name)
-                                                    } catch (err: any) {
-                                                        alert('Error: ' + err.message)
-                                                    }
-                                                }}
-                                                style={{ fontSize: '0.7rem', color: 'var(--warning)', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}
-                                            >
-                                                Send Reminder
-                                            </button>
-                                        )}
                                     </div>
                                 </div>
 

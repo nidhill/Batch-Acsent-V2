@@ -297,11 +297,6 @@ router.get('/:id/students', authenticate, async (req, res, next) => {
             : []
         const paymentMap = new Map(payments.map(p => [p.admission_id, p]))
 
-        const agreements = admissionIds.length > 0
-            ? await db.collection('ba_learner_agreements').find({ admission_id: { $in: admissionIds } }).toArray()
-            : []
-        const agreementMap = new Map(agreements.map(a => [a.admission_id, a]))
-
         const students = enrollments.map(e => {
             const payment = paymentMap.get(e._id)
             const payment_clearance_status = payment
@@ -315,7 +310,6 @@ router.get('/:id/students', authenticate, async (req, res, next) => {
                 official_student_id: officialMap.get(e.student_email),
                 payment_clearance_status,
                 payment: canSeePayments ? payment : undefined,
-                learner_agreement_status: agreementMap.get(e._id)?.status || 'not_sent',
             }
         })
 
