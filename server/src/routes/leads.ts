@@ -85,7 +85,7 @@ router.patch('/:id', authenticate, async (req, res, next) => {
             return
         }
 
-        const { status, notes } = req.body
+        const { status, notes, name, phone, email, lead_source, region, interested_course } = req.body
         const update: Record<string, any> = { updated_at: new Date().toISOString() }
         if (status !== undefined) {
             if (!VALID_STATUSES.includes(status)) {
@@ -95,8 +95,56 @@ router.patch('/:id', authenticate, async (req, res, next) => {
             update.status = status
         }
         if (notes !== undefined) update.notes = notes
+        // Editable core details — same fields as creation, minus school/sales_id
+        // (ownership doesn't change via edit).
+        if (name !== undefined) {
+            if (!String(name).trim()) {
+                res.status(400).json({ error: 'name is required' })
+                return
+            }
+            update.name = name
+        }
+        if (phone !== undefined) {
+            if (!String(phone).trim()) {
+                res.status(400).json({ error: 'phone is required' })
+                return
+            }
+            update.phone = phone
+        }
+        if (email !== undefined) update.email = email || null
+        if (lead_source !== undefined) update.lead_source = lead_source || null
+        if (region !== undefined) update.region = region || null
+        if (interested_course !== undefined) update.interested_course = interested_course || null
 
         await db.collection('ba_leads').updateOne({ _id: id as any }, { $set: update })
+        res.json({ success: true })
+    } catch (err) {
+        next(err)
+    }
+})
+
+// ---- New: delete a lead ----
+router.delete('/:id', authenticate, async (req, res, next) => {
+    try {
+        const { profile } = req.auth!
+        const id = req.params.id as string
+        const db = await getDb()
+
+        const lead = await db.collection('ba_leads').findOne({ _id: id as any })
+        if (!lead) {
+            res.status(404).json({ error: 'Lead not found' })
+            return
+        }
+        if (profile.role === 'SALES' && lead.sales_id !== profile.sales_id) {
+            res.status(403).json({ error: 'Forbidden' })
+            return
+        }
+        if (lead.status === 'converted') {
+            res.status(400).json({ error: 'This lead has already been converted to an admission and can\'t be deleted.' })
+            return
+        }
+
+        await db.collection('ba_leads').deleteOne({ _id: id as any })
         res.json({ success: true })
     } catch (err) {
         next(err)

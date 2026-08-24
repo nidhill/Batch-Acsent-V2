@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authedFetch } from '@/lib/api'
-import { UserPlus, Phone, Mail } from 'lucide-react'
+import { UserPlus, Phone, Mail, Pencil, Trash2 } from 'lucide-react'
 import { LEAD_SOURCES } from '@/lib/constants'
 
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
@@ -19,6 +19,10 @@ export default function LeadsPage() {
     const [showForm, setShowForm] = useState(false)
     const [saving, setSaving] = useState(false)
     const [form, setForm] = useState({ name: '', phone: '', email: '', lead_source: '', interested_course: '', notes: '' })
+    const [editingId, setEditingId] = useState<string | null>(null)
+    const [editForm, setEditForm] = useState({ name: '', phone: '', email: '', lead_source: '', interested_course: '' })
+    const [savingEdit, setSavingEdit] = useState(false)
+    const [deletingId, setDeletingId] = useState<string | null>(null)
 
     const fetchLeads = async () => {
         setLoading(true)
@@ -66,6 +70,48 @@ export default function LeadsPage() {
             fetchLeads()
         } catch (err: any) {
             alert('Error updating lead: ' + err.message)
+        }
+    }
+
+    const startEdit = (lead: any) => {
+        setEditingId(lead.id)
+        setEditForm({
+            name: lead.name || '', phone: lead.phone || '', email: lead.email || '',
+            lead_source: lead.lead_source || '', interested_course: lead.interested_course || '',
+        })
+    }
+
+    const handleUpdate = async (e: React.FormEvent, id: string) => {
+        e.preventDefault()
+        setSavingEdit(true)
+        try {
+            const res = await authedFetch(`/api/leads/${id}`, {
+                method: 'PATCH',
+                body: JSON.stringify(editForm),
+            })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error)
+            setEditingId(null)
+            fetchLeads()
+        } catch (err: any) {
+            alert('Error updating lead: ' + err.message)
+        } finally {
+            setSavingEdit(false)
+        }
+    }
+
+    const handleDelete = async (lead: any) => {
+        if (!confirm(`Delete lead "${lead.name}"? This cannot be undone.`)) return
+        setDeletingId(lead.id)
+        try {
+            const res = await authedFetch(`/api/leads/${lead.id}`, { method: 'DELETE' })
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error)
+            fetchLeads()
+        } catch (err: any) {
+            alert('Error deleting lead: ' + err.message)
+        } finally {
+            setDeletingId(null)
         }
     }
 
@@ -129,6 +175,24 @@ export default function LeadsPage() {
                 ) : (
                     filtered.map((lead, i) => {
                         const sc = STATUS_COLORS[lead.status] || STATUS_COLORS.new
+                        if (editingId === lead.id) {
+                            return (
+                                <form key={lead.id} onSubmit={e => handleUpdate(e, lead.id)} style={{ padding: '1rem 1.5rem', borderBottom: i !== filtered.length - 1 ? '1px solid var(--border)' : 'none', display: 'grid', gap: '0.75rem', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', background: 'var(--surface-hover)' }}>
+                                    <input className="input" placeholder="Name *" required value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} />
+                                    <input className="input" placeholder="Phone *" required value={editForm.phone} onChange={e => setEditForm({ ...editForm, phone: e.target.value })} />
+                                    <input className="input" type="email" placeholder="Email" value={editForm.email} onChange={e => setEditForm({ ...editForm, email: e.target.value })} />
+                                    <select className="input" value={editForm.lead_source} onChange={e => setEditForm({ ...editForm, lead_source: e.target.value })}>
+                                        <option value="">Lead Source</option>
+                                        {LEAD_SOURCES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                                    </select>
+                                    <input className="input" placeholder="Interested Course" value={editForm.interested_course} onChange={e => setEditForm({ ...editForm, interested_course: e.target.value })} />
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button type="submit" className="btn btn-primary" disabled={savingEdit} style={{ fontSize: '0.8rem' }}>{savingEdit ? 'Saving...' : 'Save'}</button>
+                                        <button type="button" className="btn btn-secondary" style={{ fontSize: '0.8rem' }} onClick={() => setEditingId(null)}>Cancel</button>
+                                    </div>
+                                </form>
+                            )
+                        }
                         return (
                             <div key={lead.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem', borderBottom: i !== filtered.length - 1 ? '1px solid var(--border)' : 'none', flexWrap: 'wrap', gap: '0.75rem' }}>
                                 <div>
@@ -151,6 +215,14 @@ export default function LeadsPage() {
                                             <button className="btn btn-primary" style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }} onClick={() => convertToAdmission(lead)}>Convert to Admission</button>
                                             <button className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }} onClick={() => updateStatus(lead.id, 'lost')}>Mark Lost</button>
                                         </>
+                                    )}
+                                    <button className="btn btn-secondary" title="Edit" style={{ padding: '0.35rem 0.5rem' }} onClick={() => startEdit(lead)}>
+                                        <Pencil size={14} />
+                                    </button>
+                                    {lead.status !== 'converted' && (
+                                        <button className="btn btn-secondary" title="Delete" style={{ padding: '0.35rem 0.5rem', color: 'var(--error)' }} disabled={deletingId === lead.id} onClick={() => handleDelete(lead)}>
+                                            <Trash2 size={14} />
+                                        </button>
                                     )}
                                 </div>
                             </div>
