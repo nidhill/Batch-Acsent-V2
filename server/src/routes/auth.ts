@@ -92,7 +92,7 @@ router.get('/profile', authenticate, async (req, res) => {
 // the Supabase token manually, same as the original.
 router.post('/signup-profile', async (req, res) => {
     try {
-        const { email, name, role, school } = req.body || {}
+        const { email, name, role, school, region } = req.body || {}
         const authHeader = req.headers.authorization
         if (!authHeader) {
             res.status(401).json({ error: 'Missing Authorization header' })
@@ -114,7 +114,7 @@ router.post('/signup-profile', async (req, res) => {
         await db.collection('ba_users').updateOne(
             { _id: user.id as any },
             {
-                $set: { email, name, role: 'PENDING', requested_role: role, school: school || null, updated_at: now },
+                $set: { email, name, role: 'PENDING', requested_role: role, school: school || null, region: region || null, updated_at: now },
                 $setOnInsert: { _id: user.id, created_at: now },
             },
             { upsert: true }

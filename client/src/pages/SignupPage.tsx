@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabaseClient'
-import { Lock, User, Mail, Briefcase, School, ArrowLeft, AlertCircle } from 'lucide-react'
+import { Lock, User, Mail, Briefcase, School, Globe, ArrowLeft, AlertCircle } from 'lucide-react'
 import styles from './page.module.css'
 import { SCHOOLS } from '@/lib/constants'
 import { API_BASE } from '@/lib/api'
@@ -21,10 +21,12 @@ export default function SignupPage() {
         password: '',
         name: '',
         role: 'SALES',
-        school: ''
+        school: '',
+        region: ''
     })
     const [loading, setLoading] = useState(false)
     const [schoolsList, setSchoolsList] = useState<any[]>([])
+    const [regionsList, setRegionsList] = useState<any[]>([])
 
     useEffect(() => {
         const fetchSchools = async () => {
@@ -44,7 +46,19 @@ export default function SignupPage() {
                 setSchoolsList(SCHOOLS.map(s => ({ name: s })))
             }
         }
+        const fetchRegions = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/api/regions`)
+                const data = await res.json()
+                const regions = data.regions || []
+                setRegionsList(regions)
+                if (regions.length > 0) setFormData(prev => ({ ...prev, region: regions[0]._id }))
+            } catch (err) {
+                console.error('Error fetching regions:', err)
+            }
+        }
         fetchSchools()
+        fetchRegions()
     }, [])
 
     const [error, setError] = useState('')
@@ -68,7 +82,8 @@ export default function SignupPage() {
                     data: {
                         name: formData.name,
                         requested_role: formData.role,
-                        school: formData.school
+                        school: formData.school,
+                        region: formData.region
                     }
                 }
             })
@@ -84,7 +99,8 @@ export default function SignupPage() {
                         email: formData.email,
                         name: formData.name,
                         role: formData.role,
-                        school: formData.school
+                        school: formData.school,
+                        region: formData.region
                     })
                 })
                 if (!res.ok) {
@@ -256,6 +272,25 @@ export default function SignupPage() {
                             >
                                 {schoolsList.map(school => (
                                     <option key={school.id || school.name} value={school.name}>{school.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label}>Region</label>
+                        <div className={styles.inputWrapper}>
+                            <Globe className={styles.icon} size={20} />
+                            <select
+                                name="region"
+                                className={`input ${styles.inputWithIcon}`}
+                                value={formData.region}
+                                onChange={handleChange}
+                                required
+                                style={{ background: 'transparent' }}
+                            >
+                                {regionsList.map(region => (
+                                    <option key={region._id} value={region._id}>{region.name}</option>
                                 ))}
                             </select>
                         </div>

@@ -14,7 +14,8 @@ export default function UsersPage() {
         name: '',
         email: '',
         role: 'SHO',
-        school: ''
+        school: '',
+        region: ''
     })
     const [schoolsList, setSchoolsList] = useState<any[]>([])
     const [regionsList, setRegionsList] = useState<any[]>([])
@@ -60,7 +61,9 @@ export default function UsersPage() {
         try {
             const res = await fetch(`${API_BASE}/api/regions`)
             const data = await res.json()
-            setRegionsList(data.regions || [])
+            const regions = data.regions || []
+            setRegionsList(regions)
+            if (regions.length > 0) setNewUser(prev => ({ ...prev, region: regions[0]._id }))
         } catch (err) {
             console.error('Error fetching regions:', err)
         }
@@ -90,7 +93,7 @@ export default function UsersPage() {
             }
 
             alert(`User invited successfully! Supabase has sent an email to ${newUser.email}.`)
-            setNewUser({ name: '', email: '', role: 'SHO', school: SCHOOLS[0] })
+            setNewUser({ name: '', email: '', role: 'SHO', school: SCHOOLS[0], region: regionsList[0]?._id || '' })
             fetchUsers()
         } catch (error: any) {
             alert('Error inviting user: ' + error.message)
@@ -204,6 +207,16 @@ export default function UsersPage() {
                             ))}
                         </select>
                     )}
+
+                    <select
+                        className="input"
+                        value={newUser.region}
+                        onChange={e => setNewUser({ ...newUser, region: e.target.value })}
+                    >
+                        {regionsList.map(region => (
+                            <option key={region._id} value={region._id}>{region.name}</option>
+                        ))}
+                    </select>
 
                     <button type="submit" className="btn btn-primary" style={{ gridColumn: '1 / -1' }}>
                         <UserPlus size={20} style={{ marginRight: '0.5rem' }} />

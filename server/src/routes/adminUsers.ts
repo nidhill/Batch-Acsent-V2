@@ -79,7 +79,7 @@ router.post('/delete-user', async (req, res, next) => {
 // ---- Ported from src/app/api/invite/route.ts ----
 router.post('/invite', async (req, res, next) => {
     try {
-        const { email, role, school, name } = req.body
+        const { email, role, school, name, region } = req.body
 
         const ctx = await verifyAdminCaller(req.headers.authorization)
         if (!ctx.ok) {
@@ -109,7 +109,7 @@ router.post('/invite', async (req, res, next) => {
                     await db.collection('ba_users').updateOne(
                         { _id: existingUser.id as any },
                         {
-                            $set: { email, name, role: 'PENDING', requested_role: role, school: school || null, updated_at: now },
+                            $set: { email, name, role: 'PENDING', requested_role: role, school: school || null, region: region || null, updated_at: now },
                             $setOnInsert: { _id: existingUser.id, created_at: now },
                         },
                         { upsert: true }
@@ -136,7 +136,7 @@ router.post('/invite', async (req, res, next) => {
         await db.collection('ba_users').updateOne(
             { _id: authData.user.id as any },
             {
-                $set: { email, name, role: 'PENDING', requested_role: role, school: school || null, updated_at: now },
+                $set: { email, name, role: 'PENDING', requested_role: role, school: school || null, region: region || null, updated_at: now },
                 $setOnInsert: { _id: authData.user.id, created_at: now },
             },
             { upsert: true }
@@ -144,7 +144,7 @@ router.post('/invite', async (req, res, next) => {
 
         await logMongoActivity({
             request: req, userId: user.id, userName: caller.name, userEmail: caller.email, userRole: caller.role,
-            action: 'USER_INVITE', details: { invited_email: email, invited_role: role, school: school || null, invited_name: name },
+            action: 'USER_INVITE', details: { invited_email: email, invited_role: role, school: school || null, region: region || null, invited_name: name },
         })
 
         res.json({ success: true, user: authData.user })
