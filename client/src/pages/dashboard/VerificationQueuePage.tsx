@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { Link } from 'react-router-dom'
 import { authedFetch } from '@/lib/api'
-import { CheckCircle, XCircle, ArrowRightLeft, Clock, MessageSquareWarning } from 'lucide-react'
+import { CheckCircle, XCircle, ArrowRightLeft, Clock, MessageSquareWarning, Eye } from 'lucide-react'
 
 const ACTION_LABELS: Record<string, string> = {
     new_admission: 'New Admission',
@@ -251,6 +252,13 @@ export default function VerificationQueuePage() {
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <Link
+                                        to={`/dashboard/student/${item.id}`}
+                                        className="btn"
+                                        style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.85rem', textDecoration: 'none' }}
+                                    >
+                                        <Eye size={16} /> View Details
+                                    </Link>
                                     <button
                                         onClick={() => handleVerify(item.id, item.student_name)}
                                         className="btn btn-primary"
