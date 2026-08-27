@@ -30,7 +30,24 @@ import proxyRouter from './routes/proxy'
 export function createApp() {
     const app = express()
 
-    app.use(cors({ origin: process.env.CLIENT_ORIGIN || true, credentials: true }))
+    // CLIENT_ORIGIN pinned to exactly one fixed URL meant "every other real
+    // origin gets rejected" — including this project's own Vercel deployment-
+    // specific preview URLs (batch-ascent-v2-staging-<hash>-nidhills-projects.vercel.app),
+    // which is a real URL Vercel hands out on every deploy, not a spoofed one.
+    // Landing on one of those (from a deploy log, a teammate's link, etc.)
+    // silently broke login/every API call with no server-side error to find —
+    // the browser blocks the request before it's even sent. Allow the pinned
+    // origin plus any *.vercel.app for this project, and localhost for dev.
+    app.use(cors({
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true) // curl, server-to-server, health checks
+            if (/^http:\/\/localhost:\d+$/.test(origin)) return callback(null, true)
+            if (origin === process.env.CLIENT_ORIGIN) return callback(null, true)
+            if (origin.endsWith('.vercel.app')) return callback(null, true)
+            callback(new Error(`CORS: origin ${origin} not allowed`))
+        },
+        credentials: true,
+    }))
     app.use(express.json())
 
     // Phase 0 foundation check — confirms Mongo connectivity without any auth/route logic yet.

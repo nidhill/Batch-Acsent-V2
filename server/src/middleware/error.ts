@@ -23,6 +23,13 @@ export function errorHandler(err: unknown, req: Request, res: Response, next: Ne
         res.status(400).json({ error: 'File must be under 5MB' })
         return
     }
+    // A rejected CORS origin (see the cors() config in app.ts) — a real client-side
+    // policy violation, not an application bug, so a clean 403 instead of a 500 +
+    // stack trace in the logs for every disallowed preview/expired-link hit.
+    if (err instanceof Error && err.message.startsWith('CORS:')) {
+        res.status(403).json({ error: err.message })
+        return
+    }
     console.error(`${req.method} ${req.path} error:`, err)
     res.status(500).json({ error: 'Internal Server Error' })
 }
