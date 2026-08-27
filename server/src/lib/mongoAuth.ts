@@ -1,5 +1,14 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { getDb } from './mongodb'
+
+// Reused across every request instead of constructing a fresh client (and its internal
+// fetch/config setup) on every single authenticated call — requireUser() runs on nearly
+// every API request in the app, so this was pure per-request overhead for no benefit.
+let supabaseClient: SupabaseClient | null = null
+function getSupabaseClient(url: string, anonKey: string) {
+    if (!supabaseClient) supabaseClient = createClient(url, anonKey)
+    return supabaseClient
+}
 
 export interface UserProfile {
     _id: string
@@ -44,7 +53,7 @@ export async function requireUser(authHeader: string | undefined | null): Promis
     }
     const token = authHeader.replace('Bearer ', '')
 
-    const supabase = createClient(supabaseUrl, anonKey)
+    const supabase = getSupabaseClient(supabaseUrl, anonKey)
     const { data: { user }, error } = await supabase.auth.getUser(token)
     if (error || !user) {
         throw new AuthError('Invalid or expired session', 401)

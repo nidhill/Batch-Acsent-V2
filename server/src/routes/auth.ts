@@ -69,7 +69,10 @@ router.post('/login', authenticate, async (req, res, next) => {
             if (result) finalProfile = result as any
         }
 
-        await logMongoActivity({
+        // Not awaited — logMongoActivity already catches its own errors and is non-fatal by
+        // design, so there's no reason to make the client wait on this write before getting
+        // back the profile that actually unblocks their navigation to the dashboard.
+        logMongoActivity({
             request: req, userId: authUserId, userName: finalProfile.name, userEmail: finalProfile.email, userRole: finalProfile.role,
             action: 'LOGIN', details: { school: finalProfile.school || null },
         })
