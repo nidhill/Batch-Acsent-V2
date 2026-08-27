@@ -14,10 +14,15 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  // Sales Head has no Overview nav item (nothing actionable lives there for that role
-  // anymore — see ProjectOverview.tsx), so send them straight to their real home page
-  // instead of dropping them on a page they can't get back to from the sidebar.
-  const defaultRouteForRole = (role: string) => role === 'SALES_HEAD' ? '/dashboard/verification-queue' : '/dashboard'
+  // Sales and Sales Head have no Overview nav item — Overview's admin-level BI (company
+  // revenue, sales-team-wide performance) isn't meant for individual reps, and Sales Head
+  // has nothing actionable left there either (see ProjectOverview.tsx). Send each straight
+  // to their real home page instead of dropping them on a page with no way back from the sidebar.
+  const defaultRouteForRole = (role: string) => {
+    if (role === 'SALES_HEAD') return '/dashboard/verification-queue'
+    if (role === 'SALES') return '/dashboard/sales'
+    return '/dashboard'
+  }
 
   const completeLogin = async (accessToken: string, phone?: string) => {
     const res = await fetch(`${API_BASE}/api/auth/login`, {

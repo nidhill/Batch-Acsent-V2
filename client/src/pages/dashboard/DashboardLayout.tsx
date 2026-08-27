@@ -114,7 +114,7 @@ export default function DashboardLayout() {
     const expanded = !isCollapsed || isMobileOpen
 
     const navItems = [
-        { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, roles: ['ACADEMIC_LEAD', 'ADMIN', 'BUSINESS_HEAD', 'SALES', 'CEO'] },
+        { label: 'Overview', href: '/dashboard', icon: LayoutDashboard, roles: ['ACADEMIC_LEAD', 'ADMIN', 'BUSINESS_HEAD', 'CEO'] },
         { label: 'Executive Dashboard', href: '/dashboard/ceo', icon: Target, roles: ['CEO'] },
         { label: 'AL Dashboard', href: '/dashboard/academic-lead', icon: ClipboardCheck, roles: ['ACADEMIC_LEAD'] },
         { label: 'Status', href: '/dashboard/status', icon: TrendingUp, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
