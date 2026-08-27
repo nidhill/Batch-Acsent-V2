@@ -41,6 +41,8 @@ export default function SalesPage() {
     const [analytics, setAnalytics] = useState<any>(null)
     const [leaderboardPeriod, setLeaderboardPeriod] = useState('this_month')
     const [targets, setTargets] = useState<Record<string, number>>({})
+    const [courseFilter, setCourseFilter] = useState('')
+    const [statusFilter, setStatusFilter] = useState<'all' | 'open' | 'full'>('all')
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -127,6 +129,15 @@ export default function SalesPage() {
     }
 
     if (loading) return <div>Loading...</div>
+
+    const courseOptions = Array.from(new Set(batches.map(b => b.course).filter(Boolean))).sort()
+    const filteredBatches = batches.filter(batch => {
+        if (courseFilter && batch.course !== courseFilter) return false
+        const isFull = ((batch.enrolled_count || 0) / batch.strength) * 100 >= 100
+        if (statusFilter === 'open' && isFull) return false
+        if (statusFilter === 'full' && !isFull) return false
+        return true
+    })
 
     return (
         <div className="animate-fade-in">
@@ -288,7 +299,20 @@ export default function SalesPage() {
 
             {/* Batches Table */}
             <div className="card">
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Available Batches - {userSchool}</h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>Available Batches - {userSchool}</h3>
+                    <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                        <select className="input" value={courseFilter} onChange={e => setCourseFilter(e.target.value)} style={{ fontSize: '0.85rem', width: 'auto' }}>
+                            <option value="">All Courses</option>
+                            {courseOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                        <select className="input" value={statusFilter} onChange={e => setStatusFilter(e.target.value as typeof statusFilter)} style={{ fontSize: '0.85rem', width: 'auto' }}>
+                            <option value="all">All Statuses</option>
+                            <option value="open">Open</option>
+                            <option value="full">Full</option>
+                        </select>
+                    </div>
+                </div>
                 <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead>
@@ -302,7 +326,12 @@ export default function SalesPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {batches.map(batch => {
+                            {filteredBatches.length === 0 && (
+                                <tr>
+                                    <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No batches match this filter.</td>
+                                </tr>
+                            )}
+                            {filteredBatches.map(batch => {
                                 const fillPercentage = ((batch.enrolled_count || 0) / batch.strength) * 100
                                 const isFull = fillPercentage >= 100
 
