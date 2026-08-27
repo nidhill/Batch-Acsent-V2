@@ -162,11 +162,6 @@ export default function DashboardLayout() {
                     >
                         {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
                     </button>
-                    {expanded && (
-                        <button onClick={handleSignOut} className={styles.headerIconBtn} title="Sign out">
-                            <LogOut size={16} />
-                        </button>
-                    )}
                 </div>
 
                 <nav className={`${styles.nav} ${isNavScrolling ? styles.navScrolling : ''}`} onScroll={handleNavScroll}>
@@ -202,6 +197,15 @@ export default function DashboardLayout() {
                         )
                     ))}
                 </nav>
+
+                <div className={styles.sidebarFooter}>
+                    <button onClick={handleSignOut} className={styles.signOutBtn} title="Sign out">
+                        <span className={styles.signOutIconBox}>
+                            <LogOut size={18} />
+                        </span>
+                        <span className={styles.navLabel}>Sign Out</span>
+                    </button>
+                </div>
             </aside>
 
             <main className={styles.main}>
