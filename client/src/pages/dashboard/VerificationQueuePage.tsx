@@ -216,9 +216,9 @@ export default function VerificationQueuePage() {
                 ) : (
                     <div style={{ display: 'grid', gap: '1rem' }}>
                         {items.map(item => (
-                            <div key={item.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                            <div key={item.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                                 <div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.25rem' }}>
                                         <span style={{ fontWeight: 700, fontSize: '1.05rem' }}>{item.student_name}</span>
                                         <span style={{
                                             fontSize: '0.7rem', fontWeight: 600, padding: '0.15rem 0.5rem', borderRadius: '999px',
@@ -251,7 +251,7 @@ export default function VerificationQueuePage() {
                                         <Clock size={12} /> {item.linked_at ? new Date(item.linked_at).toLocaleString() : '—'} · Payment: {item.payment_status}
                                     </div>
                                 </div>
-                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)' }}>
                                     <Link
                                         to={`/dashboard/student/${item.id}`}
                                         className="btn"
@@ -295,17 +295,17 @@ export default function VerificationQueuePage() {
                 ) : (
                     <div style={{ display: 'grid', gap: '1rem' }}>
                         {transferRequests.map(r => (
-                            <div key={r.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                            <div key={r.id} className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                                 <div>
                                     <div style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: '0.25rem' }}>{r.student?.student_name}</div>
-                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '0.375rem' }}>
                                         {r.from_batch_name || r.from_batch_id} <ArrowRightLeft size={12} /> {r.to_batch_name || r.to_batch_id}
                                     </div>
                                     <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', marginTop: '0.25rem' }}>
                                         Requested {r.requested_at ? new Date(r.requested_at).toLocaleString() : '—'} by {r.requested_by_role}
                                     </div>
                                 </div>
-                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border)' }}>
                                     <button
                                         onClick={() => handleApproveTransfer(r.id)}
                                         className="btn btn-primary"
