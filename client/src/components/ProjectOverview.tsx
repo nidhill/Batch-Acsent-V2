@@ -33,14 +33,11 @@ export default function ProjectOverview() {
         enrollmentRate: 0,
         topSalesPerson: '',
         salesPerformance: [] as { name: string, count: number }[],
-        toVerifyCount: 0,
         toCallCount: 0,
-        toVerifyList: [] as any[],
         toCallList: [] as any[]
     })
     const [revenue, setRevenue] = useState<any>(null)
     const [analytics, setAnalytics] = useState<any>(null)
-    const [toVerifyPage, setToVerifyPage] = useState(1)
     const [toCallPage, setToCallPage] = useState(1)
 
     useEffect(() => {
@@ -48,7 +45,6 @@ export default function ProjectOverview() {
         setUserRole(role)
         fetchData(role, filters)
         fetchRevenue(filters)
-        setToVerifyPage(1)
         setToCallPage(1)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters.range, filters.school])
@@ -113,25 +109,6 @@ export default function ProjectOverview() {
 
             setBatches(allBatches)
             calculateStats(allBatches, allSalesIds, usersData, allEnrollments)
-
-            // "Pending Verifications" is meant to match the real Verification Queue page
-            // exactly (same source, no date-range scoping) — it used to be computed from
-            // the "This Month" enrollments above, which made the two disagree and confused
-            // users when Overview said "All Caught Up" while the actual queue had items
-            // from earlier months. Pull from the same endpoint the queue page itself uses.
-            if (['SALES_HEAD', 'ADMIN', 'CEO'].includes(role || '')) {
-                try {
-                    const vqRes = await authedFetch('/api/verification-queue')
-                    const vqJson = await vqRes.json()
-                    if (vqRes.ok) {
-                        const items = vqJson.items || []
-                        setStats(prev => ({ ...prev, toVerifyList: items, toVerifyCount: items.length }))
-                    }
-                } catch (err) {
-                    console.error('Error fetching verification queue count:', err)
-                }
-            }
-
         } catch (error) {
             console.error('Error fetching stats:', error)
         } finally {
@@ -145,12 +122,6 @@ export default function ProjectOverview() {
         const totalCapacity = batchData.reduce((acc, curr) => acc + (curr.strength || 0), 0)
 
         // Calculate Actionable Stats
-        const toVerifyList = enrollments.filter(e => !(e.verified_at || e.status === 'Verified')).map(e => ({
-            ...e,
-            batch_name: batchData.find(b => b.id === e.batch_id)?.name || 'Unknown Batch'
-        }))
-        const toVerifyCount = toVerifyList.length
-
         const toCallList = enrollments.filter(e => (e.verified_at || e.status === 'Verified') && !e.called_at).map(e => ({
             ...e,
             batch_name: batchData.find(b => b.id === e.batch_id)?.name || 'Unknown Batch'
@@ -221,9 +192,7 @@ export default function ProjectOverview() {
             enrollmentRate: totalCapacity > 0 ? (totalStudents / totalCapacity) * 100 : 0,
             topSalesPerson: topSalesPersonName,
             salesPerformance: salesPerformanceArg,
-            toVerifyCount,
             toCallCount,
-            toVerifyList,
             toCallList
         })
     }
@@ -246,70 +215,8 @@ export default function ProjectOverview() {
                 /* SHO / SSHO / SALES_HEAD View - LIST ONLY */
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '2rem' }}>
 
-                    {/* SALES HEAD / ADMIN / CEO: See Pending Verifications */}
-                    {['SALES_HEAD', 'ADMIN', 'CEO'].includes(userRole || '') && (
-                        <>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                                <h3 style={{ fontSize: '1.05rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--text-primary)' }}>
-                                    Pending Verifications
-                                    <span className="badge badge-warn">{stats.toVerifyList.length}</span>
-                                </h3>
-                            </div>
-
-                            {stats.toVerifyList.length > 0 ? (
-                                <>
-                                <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                                    {stats.toVerifyList.slice((toVerifyPage - 1) * LIST_PAGE_SIZE, toVerifyPage * LIST_PAGE_SIZE).map((student: any, index: number, page: any[]) => (
-                                        <a
-                                            key={student.id}
-                                            href={`/dashboard/batch/${student.batch_id}`}
-                                            style={{ textDecoration: 'none', color: 'inherit' }}
-                                        >
-                                            <div style={{
-                                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                                                padding: '1rem 1.5rem',
-                                                borderBottom: index !== page.length - 1 ? '1px solid var(--border)' : 'none',
-                                                transition: 'background 0.2s',
-                                                background: 'var(--surface)'
-                                            }}
-                                                onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-hover)'}
-                                                onMouseLeave={(e) => e.currentTarget.style.background = 'var(--surface)'}
-                                            >
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                    <div style={{
-                                                        width: '40px', height: '40px', borderRadius: '50%',
-                                                        background: 'var(--warning-light)', color: 'var(--warning)',
-                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                        fontWeight: 'bold'
-                                                    }}>
-                                                        {student.student_name?.[0]?.toUpperCase()}
-                                                    </div>
-                                                    <div>
-                                                        <div style={{ fontWeight: 'bold', fontSize: '0.95rem', color: 'var(--text-primary)' }}>{student.student_name}</div>
-                                                        <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
-                                                            Batch: {student.batch_name}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                    <span className="badge badge-warn">Action Required</span>
-                                                    <div style={{ color: 'var(--text-tertiary)' }}>→</div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    ))}
-                                </div>
-                                <ListPagination page={toVerifyPage} totalItems={stats.toVerifyList.length} onChange={setToVerifyPage} />
-                                </>
-                            ) : (
-                                <div className="card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
-                                    <div style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>All Caught Up!</div>
-                                    <div>No students currently pending verification.</div>
-                                </div>
-                            )}
-                        </>
-                    )}
+                    {/* Pending Verifications moved to a badge on the Verification Queue nav
+                        item instead of a duplicate list here — see DashboardLayout.tsx. */}
 
                     {/* ADMIN / CEO / Academic Lead: See Pending Calls. Sales Head is deliberately
                         excluded — SRS Doc 3 §"Remove Operational Features" says calling/onboarding

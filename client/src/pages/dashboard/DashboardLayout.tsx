@@ -4,6 +4,7 @@ import { LayoutDashboard, PlusCircle, Users, LogOut, ChevronLeft, ChevronRight, 
 import styles from './dashboard.module.css'
 import GlobalSearch from '@/components/GlobalSearch'
 import MiniCalendar from '@/components/MiniCalendar'
+import { authedFetch } from '@/lib/api'
 
 const formatRole = (role: string) => role.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join(' ')
 
@@ -16,7 +17,13 @@ export default function DashboardLayout() {
     const navigate = useNavigate()
     const [role, setRole] = useState<string | null>(null)
     const [userName, setUserName] = useState<string>('User')
-    const [isCollapsed, setIsCollapsed] = useState(true)
+    // Defaults expanded and remembers the choice — previously reset to collapsed on
+    // every page load/reload with no memory at all, forcing a manual re-expand each time.
+    const [isCollapsed, setIsCollapsedState] = useState(() => localStorage.getItem('sidebarCollapsed') === 'true')
+    const setIsCollapsed = (value: boolean) => {
+        setIsCollapsedState(value)
+        localStorage.setItem('sidebarCollapsed', String(value))
+    }
     const [isMobileOpen, setIsMobileOpen] = useState(false)
     const [isNavScrolling, setIsNavScrolling] = useState(false)
     const navScrollTimeout = useRef<number | null>(null)
@@ -80,6 +87,27 @@ export default function DashboardLayout() {
     useEffect(() => {
         setIsMobileOpen(false)
     }, [pathname])
+
+    // Badge on the Verification Queue nav item — replaces the old "Pending
+    // Verifications" list on Overview, so the count is visible from every
+    // page instead of only when looking at Overview. Same endpoint the
+    // Verification Queue page itself uses, so the number always agrees.
+    const canSeeVerificationQueue = ['ACADEMIC_LEAD', 'ADMIN', 'CEO', 'SALES_HEAD'].includes(role || '')
+    const [pendingVerifications, setPendingVerifications] = useState(0)
+    useEffect(() => {
+        if (!canSeeVerificationQueue) return
+        let cancelled = false
+        const load = () => {
+            authedFetch('/api/verification-queue')
+                .then(res => res.json())
+                .then(data => { if (!cancelled) setPendingVerifications((data.items || []).length) })
+                .catch(() => {})
+        }
+        load()
+        const interval = setInterval(load, 60000)
+        return () => { cancelled = true; clearInterval(interval) }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [canSeeVerificationQueue])
 
     if (!role) return null
 
@@ -153,8 +181,18 @@ export default function DashboardLayout() {
                                 onClick={() => setIsMobileOpen(false)}
                             >
                                 <span className={styles.navItemLeft}>
-                                    <span className={styles.iconBox}>
+                                    <span className={styles.iconBox} style={{ position: 'relative' }}>
                                         <item.icon size={18} />
+                                        {item.label === 'Verification Queue' && pendingVerifications > 0 && (
+                                            <span style={{
+                                                position: 'absolute', top: -4, right: -4, minWidth: 16, height: 16, padding: '0 4px',
+                                                borderRadius: 999, background: 'var(--error)', color: 'white',
+                                                fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                lineHeight: 1,
+                                            }}>
+                                                {pendingVerifications > 99 ? '99+' : pendingVerifications}
+                                            </span>
+                                        )}
                                     </span>
                                     <span className={styles.navLabel}>{item.label}</span>
                                 </span>
