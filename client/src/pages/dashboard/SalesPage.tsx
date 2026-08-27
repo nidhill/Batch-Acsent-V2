@@ -165,26 +165,6 @@ export default function SalesPage() {
                 )}
             </div>
 
-            {/* Shared period filter — drives Revenue, Payment Dashboard, Lead Source/Payment
-                Method breakdowns and the Leaderboard below (all read the same leaderboardPeriod
-                state), so one control up top instead of a second one duplicated near the
-                Leaderboard heading. */}
-            {(revenue || leaderboard.length > 0) && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Filter:</span>
-                    {LEADERBOARD_PERIODS.map(p => (
-                        <button
-                            key={p.value}
-                            onClick={() => setLeaderboardPeriod(p.value)}
-                            className={`btn ${leaderboardPeriod === p.value ? 'btn-primary' : 'btn-secondary'}`}
-                            style={{ fontSize: '0.8rem', padding: '0.3rem 0.7rem' }}
-                        >
-                            {p.label}
-                        </button>
-                    ))}
-                </div>
-            )}
-
             {/* Revenue Dashboard — visible only to roles with VIEW_REVENUE_DASHBOARD permission
                 (Sales Head/Admin/CEO/Business Head); Sales Executives only ever see their
                 own revenue via the cards above, per SRS Doc 3 §7-8. */}
@@ -226,10 +206,22 @@ export default function SalesPage() {
 
             {leaderboard.length > 0 && (
                 <div className="card" style={{ marginBottom: '2rem' }}>
-                    <div style={{ marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                         <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                             <Trophy size={20} color="#eab308" /> Sales Leaderboard
                         </h3>
+                        <div style={{ display: 'flex', gap: '0.4rem' }}>
+                            {LEADERBOARD_PERIODS.map(p => (
+                                <button
+                                    key={p.value}
+                                    onClick={() => setLeaderboardPeriod(p.value)}
+                                    className={`btn ${leaderboardPeriod === p.value ? 'btn-primary' : 'btn-secondary'}`}
+                                    style={{ fontSize: '0.8rem', padding: '0.3rem 0.7rem' }}
+                                >
+                                    {p.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                     <div style={{ display: 'grid', gap: '0.5rem' }}>
                         {leaderboard.map((s, i) => {
