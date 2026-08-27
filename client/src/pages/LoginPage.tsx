@@ -14,6 +14,11 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  // Sales Head has no Overview nav item (nothing actionable lives there for that role
+  // anymore — see ProjectOverview.tsx), so send them straight to their real home page
+  // instead of dropping them on a page they can't get back to from the sidebar.
+  const defaultRouteForRole = (role: string) => role === 'SALES_HEAD' ? '/dashboard/verification-queue' : '/dashboard'
+
   const completeLogin = async (accessToken: string, phone?: string) => {
     const res = await fetch(`${API_BASE}/api/auth/login`, {
       method: 'POST',
@@ -74,7 +79,7 @@ export default function LoginPage() {
         if (userData.sales_id) localStorage.setItem('salesId', userData.sales_id)
         else localStorage.removeItem('salesId')
 
-        navigate('/dashboard')
+        navigate(defaultRouteForRole(userData.role))
       }
     } catch (err: any) {
       console.error('Login error:', err)
@@ -104,7 +109,7 @@ export default function LoginPage() {
       if (userData.school) localStorage.setItem('userSchool', userData.school)
       localStorage.setItem('salesId', userData.sales_id)
 
-      navigate('/dashboard')
+      navigate(defaultRouteForRole(userData.role))
 
     } catch (err: any) {
       console.error('Phone update error:', err)
