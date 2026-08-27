@@ -6,6 +6,13 @@ import { Search, X } from 'lucide-react'
 // SRS Doc 6 §11 "Global Search" — student name/ID/mobile/email, batch, course.
 export default function GlobalSearch() {
     const navigate = useNavigate()
+    // SALES has its own batch detail page (/dashboard/sales/batch/:id, SalesBatchDetailPage)
+    // with a scoped-down action set — the shared /dashboard/batch/:id (BatchDetailPage) is
+    // meant for roles that have the "Upcoming Batches" nav item. Search results need to route
+    // each role to the same page the rest of the app already sends them to, matching the
+    // pattern in SalesPage.tsx vs BatchList.tsx.
+    const role = localStorage.getItem('userRole')
+    const batchPath = (batchId: string) => role === 'SALES' ? `/dashboard/sales/batch/${batchId}` : `/dashboard/batch/${batchId}`
     const [query, setQuery] = useState('')
     const [open, setOpen] = useState(false)
     const [results, setResults] = useState<{ students: any[]; batches: any[] }>({ students: [], batches: [] })
@@ -90,7 +97,7 @@ export default function GlobalSearch() {
                                     {results.batches.map(b => (
                                         <div
                                             key={b.id}
-                                            onClick={() => { setOpen(false); setQuery(''); navigate(`/dashboard/batch/${b.id}`) }}
+                                            onClick={() => { setOpen(false); setQuery(''); navigate(batchPath(b.id)) }}
                                             style={{ padding: '0.6rem 0.75rem', cursor: 'pointer', borderTop: '1px solid var(--border)' }}
                                             onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-hover)'}
                                             onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
