@@ -235,14 +235,8 @@ export default function ProjectOverview() {
     // SRS Docs 2-3; SHO/SSHO/Sales Head/Academic Lead get the operational to-do list instead.
     const showActionableStats = ['SALES_HEAD', 'ACADEMIC_LEAD'].includes(userRole || '')
 
-    const userName = localStorage.getItem('userName') || ''
-    const greetingHour = new Date().getHours()
-    const timeGreeting = greetingHour < 12 ? 'Good morning' : greetingHour < 17 ? 'Good afternoon' : 'Good evening'
-
     return (
         <div className="animate-fade-in">
-            <h2 className="text-2xl font-bold" style={{ color: 'var(--primary)', margin: 0, marginBottom: '1.5rem' }}>{timeGreeting}{userName ? `, ${userName}` : ''}</h2>
-
             {['CEO', 'ADMIN', 'BUSINESS_HEAD'].includes(userRole || '') && (
                 <DashboardFilterBar filters={filters} onChange={setFilters} showRegion={false} showCourse={false} />
             )}
