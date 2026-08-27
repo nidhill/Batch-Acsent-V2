@@ -285,6 +285,17 @@ export default function ProjectOverview() {
                         </>
                     )}
 
+                    {/* SALES_HEAD has neither Pending Verifications (moved to the Verification
+                        Queue nav badge) nor Pending Calls (excluded per SRS Doc 3) — without this,
+                        their Overview was a blank box. */}
+                    {userRole === 'SALES_HEAD' && (
+                        <div className="card" style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
+                            <div style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Nothing needs your attention right now.</div>
+                            <div>New admissions waiting for verification show up in the Verification Queue.</div>
+                        </div>
+                    )}
+
                 </div>
             ) : (
                 /* Default Admin / CEO View - FULL DASHBOARD */
