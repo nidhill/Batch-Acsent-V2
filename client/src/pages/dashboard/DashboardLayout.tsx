@@ -181,22 +181,24 @@ export default function DashboardLayout() {
                                 onClick={() => setIsMobileOpen(false)}
                             >
                                 <span className={styles.navItemLeft}>
-                                    <span className={styles.iconBox} style={{ position: 'relative' }}>
+                                    <span className={styles.iconBox}>
                                         <item.icon size={18} />
-                                        {item.label === 'Verification Queue' && pendingVerifications > 0 && (
-                                            <span style={{
-                                                position: 'absolute', top: -4, right: -4, minWidth: 16, height: 16, padding: '0 4px',
-                                                borderRadius: 999, background: 'var(--error)', color: 'white',
-                                                fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                lineHeight: 1,
-                                            }}>
-                                                {pendingVerifications > 99 ? '99+' : pendingVerifications}
-                                            </span>
-                                        )}
                                     </span>
                                     <span className={styles.navLabel}>{item.label}</span>
                                 </span>
-                                <ChevronRight size={15} className={styles.chevron} />
+                                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}>
+                                    {item.label === 'Verification Queue' && pendingVerifications > 0 && (
+                                        <span style={{
+                                            flexShrink: 0, minWidth: 18, height: 18, padding: '0 5px',
+                                            borderRadius: 999, background: 'var(--error)', color: 'white',
+                                            fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            lineHeight: 1,
+                                        }}>
+                                            {pendingVerifications > 99 ? '99+' : pendingVerifications}
+                                        </span>
+                                    )}
+                                    <ChevronRight size={15} className={styles.chevron} />
+                                </span>
                             </Link>
                         )
                     ))}
