@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, Users, LogOut, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Menu, TrendingUp, History, Activity, ClipboardCheck, FileText, UserSearch, ShieldCheck, UserPlus, Target } from 'lucide-react'
+import { LayoutDashboard, PlusCircle, Users, LogOut, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Menu, TrendingUp, History, Activity, ClipboardCheck, FileText, UserSearch, ShieldCheck, Target } from 'lucide-react'
 import styles from './dashboard.module.css'
 import GlobalSearch from '@/components/GlobalSearch'
 import MiniCalendar from '@/components/MiniCalendar'
@@ -119,7 +119,6 @@ export default function DashboardLayout() {
         { label: 'AL Dashboard', href: '/dashboard/academic-lead', icon: ClipboardCheck, roles: ['ACADEMIC_LEAD'] },
         { label: 'Status', href: '/dashboard/status', icon: TrendingUp, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
         { label: 'Sales Dashboard', href: '/dashboard/sales', icon: Users, roles: ['SALES', 'SALES_HEAD', 'ADMIN', 'CEO', 'BUSINESS_HEAD'] },
-        { label: 'Leads', href: '/dashboard/leads', icon: UserPlus, roles: ['SALES', 'ADMIN', 'CEO'] },
         { label: 'Student Admission', href: '/dashboard/sales/intimation', icon: PlusCircle, roles: ['SALES', 'ADMIN', 'CEO'] },
         { label: 'Upcoming Batches', href: '/dashboard/batches', icon: BookOpen, roles: ['BUSINESS_HEAD', 'CEO', 'SALES_HEAD', 'ADMIN'] },
         { label: 'Past Batches', href: '/dashboard/past-batches', icon: History, roles: ['ACADEMIC_LEAD', 'SALES_HEAD', 'ADMIN', 'CEO'] },

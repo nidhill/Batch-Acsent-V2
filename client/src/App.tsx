@@ -15,7 +15,6 @@ import StatusPage from './pages/dashboard/StatusPage'
 import SalesPage from './pages/dashboard/SalesPage'
 import SalesIntimationPage from './pages/dashboard/SalesIntimationPage'
 import SalesBatchDetailPage from './pages/dashboard/SalesBatchDetailPage'
-import LeadsPage from './pages/dashboard/LeadsPage'
 import BatchesPage from './pages/dashboard/BatchesPage'
 import PastBatchesPage from './pages/dashboard/PastBatchesPage'
 import CreateBatchPage from './pages/dashboard/CreateBatchPage'
@@ -55,7 +54,6 @@ function App() {
           <Route path="sales" element={<SalesPage />} />
           <Route path="sales/intimation" element={<SalesIntimationPage />} />
           <Route path="sales/batch/:id" element={<SalesBatchDetailPage />} />
-          <Route path="leads" element={<LeadsPage />} />
           <Route path="batches" element={<BatchesPage />} />
           <Route path="past-batches" element={<PastBatchesPage />} />
           <Route path="create-batch" element={<CreateBatchPage />} />

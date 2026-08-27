@@ -94,7 +94,7 @@ router.post('/', authenticate, async (req, res, next) => {
             batch_id, student_name, student_email, student_phone, whatsapp_number, sales_id, sales_user_id,
             age, gender, city, state, region,
             guardian_name, guardian_contact, address,
-            lead_source, admission_date, lead_creation_date, lead_id,
+            lead_source, admission_date, lead_creation_date,
             discount, scholarship, payment_status, payment_method, payment_channel,
             amount_paid, next_due_date, installment_number, transaction_number, receipt_number, remarks,
         } = req.body
@@ -191,7 +191,6 @@ router.post('/', authenticate, async (req, res, next) => {
             address: address || null,
             guardian_name: guardian_name || null,
             guardian_contact: guardian_contact || null,
-            lead_id: lead_id || null,
             region: region || batch.region || null,
             lead_source: lead_source || null,
             admission_date: admission_date || null,
@@ -205,13 +204,6 @@ router.post('/', authenticate, async (req, res, next) => {
             onboarding_completed: false,
         }
         await db.collection('ba_admissions').insertOne(doc)
-
-        if (lead_id) {
-            await db.collection('ba_leads').updateOne(
-                { _id: lead_id },
-                { $set: { status: 'converted', converted_admission_id: admissionId, converted_at: now, updated_at: now } }
-            )
-        }
 
         const courseFee = batch.course_fee || 0
         const finalFee = Math.max(0, courseFee - (parseFloat(discount) || 0) - (parseFloat(scholarship) || 0))

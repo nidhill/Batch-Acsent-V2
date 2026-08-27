@@ -4,7 +4,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
 } from 'recharts'
 import {
-    Users, TrendingUp, IndianRupee, BookOpen, School, Target, Clock, Award, Activity,
+    Users, TrendingUp, IndianRupee, BookOpen, School, Clock, Award, Activity,
 } from 'lucide-react'
 import DashboardFilterBar, { rangeToDates } from '@/components/DashboardFilterBar'
 import type { DashboardFilters } from '@/components/DashboardFilterBar'
@@ -80,7 +80,6 @@ export default function CeoPage() {
 
             {/* 1. KPI Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
-                <Kpi label="Total Leads" value={data.total_leads ?? 0} icon={<Target size={20} />} color="#6366f1" />
                 <Kpi label="Total Admissions" value={t.total_admissions ?? 0} icon={<Users size={20} />} color="#3b82f6" />
                 <Kpi label="Active Students" value={t.onboarded ?? 0} icon={<Award size={20} />} color="#16a34a" />
                 <Kpi label="Running Batches" value={t.batches_running ?? 0} icon={<BookOpen size={20} />} color="#059669" />
@@ -94,16 +93,9 @@ export default function CeoPage() {
                 <Kpi label="Total Courses" value={t.total_courses ?? '—'} icon={<BookOpen size={20} />} color="#7c3aed" />
             </div>
 
-            {/* 3. Lead Analytics */}
+            {/* Turnaround Time — from the admission form's own "lead creation date" field, not
+                the (now removed) Leads pipeline, so this metric still holds. */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
-                <div className="card">
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 'bold', marginBottom: '1rem' }}>Lead Conversion</h3>
-                    <div style={{ display: 'flex', gap: '2rem' }}>
-                        <div><div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Total Leads</div><div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{data.total_leads ?? 0}</div></div>
-                        <div><div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Converted</div><div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'var(--success)' }}>{data.converted_leads ?? 0}</div></div>
-                        <div><div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Conversion Rate</div><div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{data.lead_conversion_rate ?? 0}%</div></div>
-                    </div>
-                </div>
                 <div className="card">
                     <h3 style={{ fontSize: '1.05rem', fontWeight: 'bold', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Clock size={18} /> Turnaround Time (Lead → Admission)</h3>
                     <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>

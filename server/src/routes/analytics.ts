@@ -206,24 +206,6 @@ router.get('/overview', authenticate, async (req, res, next) => {
         const totalEnrolled = admissions.length
         const batchUtilizationPct = totalCapacity > 0 ? Math.round((totalEnrolled / totalCapacity) * 1000) / 10 : 0
 
-        // ---- Leads (SRS workflow step 1 "Lead Generated" / Doc 2 §"Lead Analytics") ----
-        const leadFilter: Record<string, any> = {}
-        if (from || to) {
-            leadFilter.created_at = {}
-            if (from) leadFilter.created_at.$gte = from
-            if (to) leadFilter.created_at.$lte = to
-        }
-        if (profile.role === 'SALES' && profile.sales_id) leadFilter.sales_id = profile.sales_id
-        else if (!isSuperUser && profile.role !== 'SALES_HEAD' && profile.school) leadFilter.school = profile.school
-        else if (profile.role === 'SALES_HEAD' && profile.school && !school) leadFilter.school = profile.school
-        if (region) leadFilter.region = region
-        if (school) leadFilter.school = school
-
-        const leads = await db.collection('ba_leads').find(leadFilter).toArray()
-        const totalLeads = leads.length
-        const convertedLeads = leads.filter(l => l.status === 'converted').length
-        const leadConversionRate = totalLeads > 0 ? Math.round((convertedLeads / totalLeads) * 1000) / 10 : 0
-
         // ---- Org-wide counts (CEO Executive Dashboard KPI cards) ----
         const [totalSchools, totalCourses, activeUsers] = isSuperUser
             ? await Promise.all([
@@ -276,9 +258,6 @@ router.get('/overview', authenticate, async (req, res, next) => {
             turnaround_by_sales: turnaroundBySales,
             payment_status_counts: canSeeRevenue ? paymentStatusCounts : null,
             batch_utilization_percentage: batchUtilizationPct,
-            total_leads: totalLeads,
-            converted_leads: convertedLeads,
-            lead_conversion_rate: leadConversionRate,
             age_bracket: ageBracket,
             gender,
             by_state: byState,
