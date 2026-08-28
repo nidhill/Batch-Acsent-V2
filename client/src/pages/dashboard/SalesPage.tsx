@@ -336,83 +336,69 @@ export default function SalesPage() {
                         </select>
                     </div>
                 </div>
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead>
-                            <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                                <th style={{ padding: '1rem' }}>Batch ID</th>
-                                <th style={{ padding: '1rem' }}>Name</th>
-                                <th style={{ padding: '1rem' }}>Course</th>
-                                <th style={{ padding: '1rem' }}>Start Date</th>
-                                <th style={{ padding: '1rem' }}>Enrollment</th>
-                                <th style={{ padding: '1rem' }}>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredBatches.length === 0 && (
-                                <tr>
-                                    <td colSpan={6} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No batches match this filter.</td>
-                                </tr>
-                            )}
-                            {filteredBatches.map(batch => {
-                                const fillPercentage = ((batch.enrolled_count || 0) / batch.strength) * 100
-                                const isFull = fillPercentage >= 100
+                {filteredBatches.length === 0 ? (
+                    <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No batches match this filter.</div>
+                ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1rem' }}>
+                        {filteredBatches.map(batch => {
+                            const fillPercentage = ((batch.enrolled_count || 0) / batch.strength) * 100
+                            const isFull = fillPercentage >= 100
 
-                                return (
-                                    <tr
-                                        key={batch.id}
-                                        onClick={() => navigate(`/dashboard/sales/batch/${batch.id}`)}
-                                        style={{
-                                            borderBottom: '1px solid var(--border)',
-                                            cursor: 'pointer',
-                                            transition: 'background 0.2s'
-                                        }}
-                                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-hover)'}
-                                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                    >
-                                        <td style={{ padding: '1rem', fontWeight: '600' }}>{batch.id}</td>
-                                        <td style={{ padding: '1rem' }}>{batch.name}</td>
-                                        <td style={{ padding: '1rem' }}>{batch.course}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            {new Date(batch.start_date).toLocaleDateString('en-US', {
-                                                day: 'numeric',
-                                                month: 'short',
-                                                year: 'numeric'
-                                            })}
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                <div style={{ flex: 1, height: '8px', background: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
-                                                    <div style={{
-                                                        width: `${fillPercentage}%`,
-                                                        height: '100%',
-                                                        background: isFull ? '#ef4444' : 'var(--primary)',
-                                                        transition: 'width 0.3s'
-                                                    }} />
-                                                </div>
-                                                <span style={{ fontSize: '0.875rem', fontWeight: '600' }}>
-                                                    {batch.enrolled_count}/{batch.strength}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <span style={{
-                                                padding: '0.25rem 0.75rem',
-                                                borderRadius: '9999px',
-                                                fontSize: '0.75rem',
-                                                fontWeight: '600',
-                                                background: isFull ? '#fee2e2' : '#dbeafe',
-                                                color: isFull ? '#dc2626' : '#2563eb'
-                                            }}>
-                                                {isFull ? 'Full' : 'Open'}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                            return (
+                                <div
+                                    key={batch.id}
+                                    onClick={() => navigate(`/dashboard/sales/batch/${batch.id}`)}
+                                    style={{
+                                        border: '1px solid var(--border)',
+                                        borderRadius: 'var(--radius-md)',
+                                        padding: '1.1rem',
+                                        cursor: 'pointer',
+                                        transition: 'box-shadow 0.15s, border-color 0.15s',
+                                    }}
+                                    onMouseEnter={(e) => { e.currentTarget.style.boxShadow = 'var(--shadow-md)'; e.currentTarget.style.borderColor = 'var(--primary)' }}
+                                    onMouseLeave={(e) => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'var(--border)' }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.6rem' }}>
+                                        <div>
+                                            <div style={{ fontWeight: 700, fontSize: '1rem' }}>{batch.name}</div>
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', fontWeight: 600 }}>{batch.id}</div>
+                                        </div>
+                                        <span style={{
+                                            flexShrink: 0,
+                                            padding: '0.25rem 0.75rem',
+                                            borderRadius: '9999px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: '600',
+                                            background: isFull ? '#fee2e2' : '#dbeafe',
+                                            color: isFull ? '#dc2626' : '#2563eb'
+                                        }}>
+                                            {isFull ? 'Full' : 'Open'}
+                                        </span>
+                                    </div>
+
+                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.15rem' }}>{batch.course}</div>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', marginBottom: '0.9rem' }}>
+                                        Starts {new Date(batch.start_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                        <div style={{ flex: 1, height: '8px', background: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
+                                            <div style={{
+                                                width: `${fillPercentage}%`,
+                                                height: '100%',
+                                                background: isFull ? '#ef4444' : 'var(--primary)',
+                                                transition: 'width 0.3s'
+                                            }} />
+                                        </div>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: '600', flexShrink: 0 }}>
+                                            {batch.enrolled_count}/{batch.strength}
+                                        </span>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     )
