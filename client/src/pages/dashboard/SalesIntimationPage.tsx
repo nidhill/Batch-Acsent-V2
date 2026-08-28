@@ -105,13 +105,24 @@ export default function SalesIntimationPage() {
                 if (!res.ok) throw new Error(data.error)
 
                 const todayStr = new Date().toISOString().split('T')[0]
+                // Same "still worth enrolling into" scoping as the Sales Dashboard batch
+                // cards: upcoming, or started within the last month (late admissions are
+                // common early on) — and never full, since there's nothing to pick here.
+                const oneMonthAgo = new Date()
+                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
                 const relevant = (data.batches || []).filter((b: any) =>
-                    b.school === formData.school && (!b.end_date || b.end_date >= todayStr)
+                    b.school === formData.school
+                    && (!b.end_date || b.end_date >= todayStr)
+                    && new Date(b.start_date) >= oneMonthAgo
+                    && (b.enrolled_count || 0) < b.strength
                 )
                 setBatchesList(relevant.map((batch: any) => ({
                     ...batch,
                     current_count: batch.enrolled_count || 0,
-                    is_full: (batch.enrolled_count || 0) >= batch.strength
+                    // Kept even though the dropdown now excludes full batches outright — this
+                    // still guards the submit-time race where a batch fills up between fetch
+                    // and submit (see the is_full check further down).
+                    is_full: (batch.enrolled_count || 0) >= batch.strength,
                 })))
             } catch (err) {
                 console.error('Error fetching batches:', err)
@@ -436,13 +447,8 @@ export default function SalesIntimationPage() {
                             >
                                 <option value="">{formData.school ? 'Select Batch' : 'Select a School first'}</option>
                                 {batchesList.map(batch => (
-                                    <option
-                                        key={batch.id}
-                                        value={batch.id}
-                                        disabled={batch.is_full}
-                                        style={batch.is_full ? { color: 'var(--text-secondary)' } : {}}
-                                    >
-                                        {batch.name} ({batch.id}) {batch.is_full ? '- FULL' : `(${batch.current_count}/${batch.strength})`}
+                                    <option key={batch.id} value={batch.id}>
+                                        {batch.name} ({batch.id}) ({batch.current_count}/{batch.strength})
                                     </option>
                                 ))}
                             </select>
