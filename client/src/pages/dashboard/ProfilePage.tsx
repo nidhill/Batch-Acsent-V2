@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { authedFetch } from '@/lib/api'
 import { Users, Mail, Phone, Building2, MapPin, ShieldCheck, Hash } from 'lucide-react'
 
-const formatRole = (role: string) => role.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join(' ')
+// Matches DashboardLayout.tsx's formatRole — SALES displays as "Sales Executive" everywhere
+// else in the app (SignupPage's role picker, admission form language).
+const formatRole = (role: string) => role === 'SALES' ? 'Sales Executive' : role.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join(' ')
 
 export default function ProfilePage() {
     const [profile, setProfile] = useState<any>(null)

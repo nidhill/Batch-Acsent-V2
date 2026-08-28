@@ -6,7 +6,10 @@ import GlobalSearch from '@/components/GlobalSearch'
 import MiniCalendar from '@/components/MiniCalendar'
 import { authedFetch } from '@/lib/api'
 
-const formatRole = (role: string) => role.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join(' ')
+// SALES displays as "Sales Executive" everywhere else in the app (SignupPage's role picker,
+// the "credited to which Sales Executive" language on admissions) — this generic formatter
+// alone would've produced the bare "Sales" instead.
+const formatRole = (role: string) => role === 'SALES' ? 'Sales Executive' : role.split('_').map(w => w[0] + w.slice(1).toLowerCase()).join(' ')
 
 // Ported from src/app/dashboard/layout.tsx. Dashboard auth-gating is client-side only (checks
 // localStorage), matching the original — real authorization is enforced server-side per-route
