@@ -8,7 +8,12 @@ import { API_BASE } from '@/lib/api'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  // authedFetch (lib/api.ts) redirects here with ?sessionExpired=1 when the Supabase refresh
+  // token has died and every API call started 401ing — surfaces as a plain re-login prompt
+  // instead of the dashboard silently hanging on stale/empty data.
+  const [error, setError] = useState(() =>
+    new URLSearchParams(window.location.search).get('sessionExpired') ? 'Your session expired. Please sign in again.' : ''
+  )
   const [showPhoneInput, setShowPhoneInput] = useState(false)
   const [phoneNumber, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(false)
