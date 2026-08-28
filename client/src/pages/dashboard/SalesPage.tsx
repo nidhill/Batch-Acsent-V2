@@ -153,8 +153,17 @@ export default function SalesPage() {
         )
     }
 
+    // Sales and Sales Head only need batches they can actually still enroll students into —
+    // upcoming ones, plus recently-started ones (late admissions are common in the first
+    // month). Older running/past batches belong on Past Batches, not clutter here. Admin/CEO/
+    // Business Head land on this same page for oversight and keep seeing everything.
+    const oneMonthAgo = new Date()
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
+    const scopeToRecentAndUpcoming = ['SALES', 'SALES_HEAD'].includes(userRole || '')
+
     const courseOptions = Array.from(new Set(batches.map(b => b.course).filter(Boolean))).sort()
     const filteredBatches = batches.filter(batch => {
+        if (scopeToRecentAndUpcoming && new Date(batch.start_date) < oneMonthAgo) return false
         if (courseFilter && batch.course !== courseFilter) return false
         const isFull = ((batch.enrolled_count || 0) / batch.strength) * 100 >= 100
         if (statusFilter === 'open' && isFull) return false
