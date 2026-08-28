@@ -122,7 +122,7 @@ export default function DashboardLayout() {
         { label: 'Student Admission', href: '/dashboard/sales/intimation', icon: PlusCircle, roles: ['SALES', 'ADMIN', 'CEO'] },
         { label: 'Upcoming Batches', href: '/dashboard/batches', icon: BookOpen, roles: ['BUSINESS_HEAD', 'CEO', 'SALES_HEAD', 'ADMIN'] },
         { label: 'Past Batches', href: '/dashboard/past-batches', icon: History, roles: ['ACADEMIC_LEAD', 'SALES_HEAD', 'ADMIN', 'CEO'] },
-        { label: 'Create Batch', href: '/dashboard/create-batch', icon: PlusCircle, roles: ['ADMIN', 'SALES'] },
+        { label: 'Create Batch', href: '/dashboard/create-batch', icon: PlusCircle, roles: ['ACADEMIC_LEAD', 'ADMIN', 'CEO'] },
         { label: 'Verification Queue', href: '/dashboard/verification-queue', icon: ClipboardCheck, roles: ['ACADEMIC_LEAD', 'ADMIN', 'CEO', 'SALES_HEAD'] },
         { label: 'Student 360°', href: '/dashboard/student-360', icon: UserSearch, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
         { label: 'LMS Access Policy', href: '/dashboard/lms-access-policy', icon: ShieldCheck, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
