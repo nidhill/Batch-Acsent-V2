@@ -32,6 +32,11 @@ export default function SalesPage() {
     const [batches, setBatches] = useState<Batch[]>([])
     const [stats, setStats] = useState<SalesStats>({ total_enrollments: 0, this_month: 0 })
     const [loading, setLoading] = useState(true)
+    // Fetch failures (a Render cold-start timeout, a dropped connection) were previously
+    // swallowed to console.error only — the page rendered the untouched default state (0
+    // enrollments, an empty batches list), which is visually identical to a real empty
+    // account. This makes failures visible instead of silently masquerading as real zeros.
+    const [loadError, setLoadError] = useState(false)
     const [userSchool, setUserSchool] = useState<string | null>(null)
     const [salesId, setSalesId] = useState<string | null>(null)
 
@@ -50,8 +55,8 @@ export default function SalesPage() {
             setSalesId(localStorage.getItem('salesId'))
             setUserRole(localStorage.getItem('userRole'))
         }
-        fetchBatches()
-        fetchStats()
+        loadAll()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -59,6 +64,11 @@ export default function SalesPage() {
         fetchTargets()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [leaderboardPeriod])
+
+    const loadAll = () => {
+        setLoadError(false)
+        Promise.all([fetchBatches(), fetchStats()]).catch(() => setLoadError(true))
+    }
 
     const fetchTargets = async () => {
         try {
@@ -112,6 +122,7 @@ export default function SalesPage() {
             setBatches(data.batches || [])
         } catch (error) {
             console.error('Error fetching batches:', error)
+            throw error
         } finally {
             setLoading(false)
         }
@@ -125,10 +136,22 @@ export default function SalesPage() {
             setStats(data)
         } catch (error) {
             console.error('Error fetching stats:', error)
+            throw error
         }
     }
 
     if (loading) return <div>Loading...</div>
+
+    if (loadError) {
+        return (
+            <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
+                <div style={{ color: 'var(--error)', fontWeight: 600, marginBottom: '1rem' }}>
+                    Couldn't load the dashboard — the server may still be starting up. Try again in a few seconds.
+                </div>
+                <button className="btn btn-primary" onClick={() => { setLoading(true); loadAll() }}>Retry</button>
+            </div>
+        )
+    }
 
     const courseOptions = Array.from(new Set(batches.map(b => b.course).filter(Boolean))).sort()
     const filteredBatches = batches.filter(batch => {
