@@ -107,21 +107,19 @@ export default function SalesIntimationPage() {
                 const todayStr = new Date().toISOString().split('T')[0]
                 // Same "still worth enrolling into" scoping as the Sales Dashboard batch
                 // cards: upcoming, or started within the last month (late admissions are
-                // common early on) — and never full, since there's nothing to pick here.
+                // common early on). Full batches stay in the list (strength is a planning
+                // number, not a hard cap) — the dropdown flags them instead of hiding them,
+                // so a rep can still knowingly over-enroll one when there's real room.
                 const oneMonthAgo = new Date()
                 oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1)
                 const relevant = (data.batches || []).filter((b: any) =>
                     b.school === formData.school
                     && (!b.end_date || b.end_date >= todayStr)
                     && new Date(b.start_date) >= oneMonthAgo
-                    && (b.enrolled_count || 0) < b.strength
                 )
                 setBatchesList(relevant.map((batch: any) => ({
                     ...batch,
                     current_count: batch.enrolled_count || 0,
-                    // Kept even though the dropdown now excludes full batches outright — this
-                    // still guards the submit-time race where a batch fills up between fetch
-                    // and submit (see the is_full check further down).
                     is_full: (batch.enrolled_count || 0) >= batch.strength,
                 })))
             } catch (err) {
@@ -193,8 +191,11 @@ export default function SalesIntimationPage() {
         try {
             const batchId = formData.batch_code
             if (!batchId) throw new Error('Batch selection missing or invalid.')
+            // A warning, not a hard block — strength is a planning number, not a wall. The rep
+            // still has to consciously say yes to enrolling past it.
             if (selectedBatch?.is_full) {
-                throw new Error(`The batch "${selectedBatch.name}" is already full (${selectedBatch.current_count}/${selectedBatch.strength} seats).`)
+                const proceed = confirm(`The batch "${selectedBatch.name}" is already full (${selectedBatch.current_count}/${selectedBatch.strength} seats). Enroll this student anyway?`)
+                if (!proceed) return
             }
 
             const res = await authedFetch('/api/admissions', {
@@ -448,12 +449,17 @@ export default function SalesIntimationPage() {
                                 <option value="">{formData.school ? 'Select Batch' : 'Select a School first'}</option>
                                 {batchesList.map(batch => (
                                     <option key={batch.id} value={batch.id}>
-                                        {batch.name} ({batch.id}) ({batch.current_count}/{batch.strength})
+                                        {batch.name} ({batch.id}) ({batch.current_count}/{batch.strength}){batch.is_full ? ' — FULL, over-enrolling' : ''}
                                     </option>
                                 ))}
                             </select>
                             {formData.school && batchesList.length === 0 && (
                                 <p style={{ fontSize: '0.75rem', color: 'var(--warning)', marginTop: '0.25rem' }}>No open batches found for {formData.school}.</p>
+                            )}
+                            {selectedBatch?.is_full && (
+                                <p style={{ fontSize: '0.75rem', color: 'var(--warning)', marginTop: '0.25rem' }}>
+                                    This batch is already full ({selectedBatch.current_count}/{selectedBatch.strength}) — you'll be asked to confirm on submit.
+                                </p>
                             )}
                         </div>
                     </div>
