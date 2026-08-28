@@ -457,8 +457,20 @@ export default function SalesBatchDetailPage() {
                 </div>
             )}
 
-            {/* Other Students */}
-            {otherStudents.length > 0 && (
+            {/* Other Students — full contact details (name/email/who-enrolled-them) are only
+                shown to roles with team-wide oversight. A plain Sales Executive has no reason
+                to see a teammate's leads' PII, just that the batch also has other enrollments
+                (SRS Doc 3 §"Sales Executive": scoped to their own admissions). */}
+            {otherStudents.length > 0 && (userRole === 'SALES' ? (
+                <div className="card">
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
+                        Other Students ({otherStudents.length})
+                    </h3>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
+                        Enrolled by other Sales Executives — only your own enrollments are shown in detail above.
+                    </p>
+                </div>
+            ) : (
                 <div className="card">
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>
                         Other Students ({otherStudents.length})
@@ -637,7 +649,7 @@ export default function SalesBatchDetailPage() {
                         ))}
                     </div>
                 </div>
-            )}
+            ))}
 
             {students.length === 0 && (
                 <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
