@@ -470,7 +470,7 @@ export default function SalesIntimationPage() {
                             <div><strong>Course Fee:</strong> ₹{courseFee.toLocaleString()}</div>
                             <div><strong>Batch Start:</strong> {selectedBatch.start_date ? new Date(selectedBatch.start_date).toLocaleDateString('en-GB') : '—'}</div>
                             <div><strong>Orientation Date:</strong> {selectedBatch.orientation_date ? new Date(selectedBatch.orientation_date).toLocaleDateString('en-GB') : '—'}</div>
-                            <div><strong>Available Seats:</strong> {(selectedBatch.strength || 0) - (selectedBatch.enrolled_count || 0)}</div>
+                            <div><strong>Available Seats:</strong> {Math.max(0, (selectedBatch.strength || 0) - (selectedBatch.enrolled_count || 0))}</div>
                             <div><strong>Region:</strong> {selectedBatch.region || '—'}</div>
                         </div>
                     )}
