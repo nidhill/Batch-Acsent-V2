@@ -343,6 +343,14 @@ export default function SalesPage() {
                         {filteredBatches.map(batch => {
                             const fillPercentage = ((batch.enrolled_count || 0) / batch.strength) * 100
                             const isFull = fillPercentage >= 100
+                            // Open/Full alone gave no warning before a batch actually filled up —
+                            // a rep could be one enrollment away from Full with no signal to act
+                            // on. Almost Full (80%+) closes that gap.
+                            const isAlmostFull = !isFull && fillPercentage >= 80
+                            const statusLabel = isFull ? 'Full' : isAlmostFull ? 'Almost Full' : 'Open'
+                            const statusBg = isFull ? '#fee2e2' : isAlmostFull ? '#ffedd5' : '#dbeafe'
+                            const statusColor = isFull ? '#dc2626' : isAlmostFull ? '#c2410c' : '#2563eb'
+                            const barColor = isFull ? '#ef4444' : isAlmostFull ? '#f97316' : 'var(--primary)'
 
                             return (
                                 <div
@@ -369,10 +377,10 @@ export default function SalesPage() {
                                             borderRadius: '9999px',
                                             fontSize: '0.75rem',
                                             fontWeight: '600',
-                                            background: isFull ? '#fee2e2' : '#dbeafe',
-                                            color: isFull ? '#dc2626' : '#2563eb'
+                                            background: statusBg,
+                                            color: statusColor
                                         }}>
-                                            {isFull ? 'Full' : 'Open'}
+                                            {statusLabel}
                                         </span>
                                     </div>
 
@@ -384,10 +392,10 @@ export default function SalesPage() {
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                         <div style={{ flex: 1, height: '8px', background: '#e5e7eb', borderRadius: '4px', overflow: 'hidden' }}>
                                             <div style={{
-                                                width: `${fillPercentage}%`,
+                                                width: `${Math.min(fillPercentage, 100)}%`,
                                                 height: '100%',
-                                                background: isFull ? '#ef4444' : 'var(--primary)',
-                                                transition: 'width 0.3s'
+                                                background: barColor,
+                                                transition: 'width 0.3s, background 0.3s'
                                             }} />
                                         </div>
                                         <span style={{ fontSize: '0.8rem', fontWeight: '600', flexShrink: 0 }}>
