@@ -10,7 +10,7 @@ import { API_BASE } from '@/lib/api'
 // for those roles in Batch Ascent V2 no longer make sense.
 const ALLOWED_ROLES = [
     { label: 'Sales Executive', value: 'SALES' },
-    { label: 'Sales Head', value: 'SALES_HEAD' },
+    { label: 'Sales Lead', value: 'SALES_HEAD' },
     { label: 'Academic Lead', value: 'ACADEMIC_LEAD' },
     { label: 'Business Head', value: 'BUSINESS_HEAD' }
 ]

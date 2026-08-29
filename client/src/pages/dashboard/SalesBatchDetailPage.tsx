@@ -444,7 +444,7 @@ export default function SalesBatchDetailPage() {
                                                 fontWeight: '500',
                                                 transition: 'background 0.2s'
                                             }}
-                                            title={student.verified_at ? "Remove verified student (Sales Head only)" : "Remove student"}
+                                            title={student.verified_at ? "Remove verified student (Sales Lead only)" : "Remove student"}
                                         >
                                             <Trash2 size={16} />
                                             Remove
@@ -638,7 +638,7 @@ export default function SalesBatchDetailPage() {
                                                 transition: 'background 0.2s',
                                                 marginLeft: '0.5rem'
                                             }}
-                                            title={student.verified_at ? "Remove verified student (Sales Head only)" : "Remove student"}
+                                            title={student.verified_at ? "Remove verified student (Sales Lead only)" : "Remove student"}
                                         >
                                             <Trash2 size={16} />
                                             Remove
