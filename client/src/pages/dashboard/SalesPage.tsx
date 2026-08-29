@@ -312,9 +312,9 @@ export default function SalesPage() {
                 anywhere until now. */}
             {['SALES_HEAD', 'ADMIN', 'CEO', 'BUSINESS_HEAD'].includes(userRole || '') && analytics && (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-                    {Object.keys(analytics.lead_source || {}).length > 0 && (
-                        <div className="card">
-                            <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Lead Source Breakdown</h3>
+                    <div className="card">
+                        <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Lead Source Breakdown</h3>
+                        {Object.keys(analytics.lead_source || {}).length > 0 ? (
                             <div style={{ height: '260px', width: '100%' }}>
                                 <ResponsiveContainer width="100%" height="100%" debounce={200}>
                                     <PieChart>
@@ -331,11 +331,13 @@ export default function SalesPage() {
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
-                        </div>
-                    )}
-                    {analytics.payment_method_breakdown && Object.keys(analytics.payment_method_breakdown).length > 0 && (
-                        <div className="card">
-                            <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Revenue by Payment Method</h3>
+                        ) : (
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>No lead source data yet.</p>
+                        )}
+                    </div>
+                    <div className="card">
+                        <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Revenue by Payment Method</h3>
+                        {analytics.payment_method_breakdown && Object.keys(analytics.payment_method_breakdown).length > 0 ? (
                             <div style={{ height: '260px', width: '100%' }}>
                                 <ResponsiveContainer width="100%" height="100%" debounce={200}>
                                     <BarChart data={Object.entries(analytics.payment_method_breakdown).map(([name, v]: [string, any]) => ({ name, revenue: v.revenue }))}>
@@ -347,11 +349,13 @@ export default function SalesPage() {
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
-                        </div>
-                    )}
-                    {analytics.revenue_by_course && Object.keys(analytics.revenue_by_course).length > 0 && (
-                        <div className="card">
-                            <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Revenue by Program</h3>
+                        ) : (
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>No payment data yet.</p>
+                        )}
+                    </div>
+                    <div className="card">
+                        <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Revenue by Program</h3>
+                        {analytics.revenue_by_course && Object.keys(analytics.revenue_by_course).length > 0 ? (
                             <div style={{ height: '260px', width: '100%' }}>
                                 <ResponsiveContainer width="100%" height="100%" debounce={200}>
                                     <BarChart data={Object.entries(analytics.revenue_by_course).map(([name, revenue]) => ({ name, revenue }))}>
@@ -363,8 +367,10 @@ export default function SalesPage() {
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
-                        </div>
-                    )}
+                        ) : (
+                            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>No program revenue data yet.</p>
+                        )}
+                    </div>
                 </div>
             )}
 
