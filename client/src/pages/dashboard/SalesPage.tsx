@@ -354,20 +354,38 @@ export default function SalesPage() {
                         )}
                     </div>
                     <div className="card">
-                        <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Revenue by Program</h3>
-                        {analytics.revenue_by_course && Object.keys(analytics.revenue_by_course).length > 0 ? (
-                            <div style={{ height: '260px', width: '100%' }}>
-                                <ResponsiveContainer width="100%" height="100%" debounce={200}>
-                                    <BarChart data={Object.entries(analytics.revenue_by_course).map(([name, revenue]) => ({ name, revenue }))}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                                        <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
-                                        <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
-                                        <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px' }} cursor={{ fill: 'var(--surface-hover)' }} />
-                                        <Bar dataKey="revenue" fill="#8884d8" radius={[4, 4, 0, 0]} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        ) : (
+                        <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: analytics.revenue_by_course && Object.keys(analytics.revenue_by_course).length > 0 ? '0.25rem' : '1.5rem' }}>Revenue by Program</h3>
+                        {analytics.revenue_by_course && Object.keys(analytics.revenue_by_course).length > 0 ? (() => {
+                            // Sorted highest-first so the top-earning program is always the
+                            // leftmost/tallest bar, not just whatever order Object.entries()
+                            // happened to return.
+                            const sorted = Object.entries(analytics.revenue_by_course as Record<string, number>)
+                                .map(([name, revenue]) => ({ name, revenue }))
+                                .sort((a, b) => b.revenue - a.revenue)
+                            const top = sorted[0]
+                            return (
+                                <>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                                        Top: <strong style={{ color: 'var(--text-primary)' }}>{top.name}</strong> (₹{top.revenue.toLocaleString()})
+                                    </p>
+                                    <div style={{ height: '260px', width: '100%' }}>
+                                        <ResponsiveContainer width="100%" height="100%" debounce={200}>
+                                            <BarChart data={sorted}>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                                                <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                                                <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                                                <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px' }} cursor={{ fill: 'var(--surface-hover)' }} />
+                                                <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+                                                    {sorted.map((entry, index) => (
+                                                        <Cell key={entry.name} fill={index === 0 ? '#8884d8' : '#c4c1ea'} />
+                                                    ))}
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </>
+                            )
+                        })() : (
                             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>No program revenue data yet.</p>
                         )}
                     </div>
