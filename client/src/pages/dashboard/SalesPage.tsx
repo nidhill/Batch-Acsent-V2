@@ -349,6 +349,22 @@ export default function SalesPage() {
                             </div>
                         </div>
                     )}
+                    {analytics.revenue_by_course && Object.keys(analytics.revenue_by_course).length > 0 && (
+                        <div className="card">
+                            <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Revenue by Program</h3>
+                            <div style={{ height: '260px', width: '100%' }}>
+                                <ResponsiveContainer width="100%" height="100%" debounce={200}>
+                                    <BarChart data={Object.entries(analytics.revenue_by_course).map(([name, revenue]) => ({ name, revenue }))}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+                                        <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                                        <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                                        <Tooltip contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '8px' }} cursor={{ fill: 'var(--surface-hover)' }} />
+                                        <Bar dataKey="revenue" fill="#8884d8" radius={[4, 4, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
