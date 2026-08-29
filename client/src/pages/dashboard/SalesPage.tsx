@@ -42,6 +42,10 @@ export default function SalesPage() {
 
     const [userRole, setUserRole] = useState<string | null>(null)
     const [revenue, setRevenue] = useState<any>(null)
+    // Always "this calendar month", independent of the Daily/Weekly/Monthly/Yearly leaderboard
+    // filter below — so there's a stable answer to "how much this month" even when someone's
+    // browsing a different period.
+    const [thisMonthRevenue, setThisMonthRevenue] = useState<any>(null)
     const [leaderboard, setLeaderboard] = useState<any[]>([])
     const [analytics, setAnalytics] = useState<any>(null)
     const [leaderboardPeriod, setLeaderboardPeriod] = useState('this_month')
@@ -56,6 +60,7 @@ export default function SalesPage() {
             setUserRole(localStorage.getItem('userRole'))
         }
         loadAll()
+        fetchThisMonthRevenue()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -111,6 +116,18 @@ export default function SalesPage() {
             setAnalytics(data)
         } catch (error) {
             console.error('Error fetching revenue analytics:', error)
+        }
+    }
+
+    const fetchThisMonthRevenue = async () => {
+        try {
+            const { from, to } = rangeToDates('this_month')
+            const res = await authedFetch(`/api/analytics/overview?from=${from}&to=${to}`)
+            const data = await res.json()
+            if (!res.ok) return
+            setThisMonthRevenue(data.revenue)
+        } catch (error) {
+            console.error('Error fetching this month revenue:', error)
         }
     }
 
@@ -206,6 +223,12 @@ export default function SalesPage() {
                         <div className="kpi-label">Total Revenue</div>
                         <div className="kpi-value">₹{revenue.total.toLocaleString()}</div>
                     </div>
+                    {thisMonthRevenue && (
+                        <div className="card" style={{ padding: '1.1rem 1.25rem' }}>
+                            <div className="kpi-label">This Month Revenue</div>
+                            <div className="kpi-value">₹{thisMonthRevenue.total.toLocaleString()}</div>
+                        </div>
+                    )}
                     <div className="card" style={{ padding: '1.1rem 1.25rem' }}>
                         <div className="kpi-label">Collected</div>
                         <div className="kpi-value" style={{ color: 'var(--success)' }}>₹{revenue.collected.toLocaleString()}</div>
