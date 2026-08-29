@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabaseClient'
 import { Mail, ArrowLeft, AlertCircle } from 'lucide-react'
 import styles from './page.module.css'
+import { BrandPanel, LogoRow } from './LoginPage'
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('')
@@ -34,108 +35,73 @@ export default function ForgotPasswordPage() {
     if (success) {
         return (
             <div className={styles.container}>
-                <div className={styles.brandPanel}>
-                    <div className={styles.brandLogoBadge}>
-                        <img src="/logo-new.png" alt="Batch Ascent" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                    </div>
-                    <div className={styles.brandName}>Batch Ascent</div>
-                    <p className={styles.brandTagline}>
-                        One place to manage admissions, batches, payments and every student's journey from lead to onboarding.
-                    </p>
-                </div>
                 <div className={styles.formPanel}>
-                    <div className={`card ${styles.loginCard} animate-fade-in`} style={{ textAlign: 'center' }}>
-                        <div style={{ color: 'var(--success)', marginBottom: '1rem' }}>
-                            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                            </svg>
+                    <div className={styles.loginCard} style={{ textAlign: 'center' }}>
+                        <div className={styles.sentIcon}>
+                            <Mail size={34} />
                         </div>
-                        <div className={styles.welcomeTitle}>Check your email</div>
-                        <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-                            We've sent a password reset link to <strong>{email}</strong>.
+                        <h1 className={styles.welcomeTitle} style={{ fontSize: '28px' }}>Check your email</h1>
+                        <p className={styles.subtitle}>
+                            We've sent a password reset link to <strong style={{ color: 'var(--text-primary)' }}>{email}</strong>. Click the link to set a new password — it expires in 30 minutes.
                         </p>
-                        <Link to="/" className="btn btn-primary" style={{ display: 'inline-block', width: '100%' }}>
-                            Back to Login
+                        <Link to="/" className={styles.submitBtn} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', marginBottom: '20px' }}>
+                            Back to sign in
                         </Link>
+                        <p className={styles.footerText} style={{ margin: 0 }}>Didn't get it? <a href="#" onClick={(e) => { e.preventDefault(); setSuccess(false) }}>Resend link</a></p>
                     </div>
                 </div>
+                <BrandPanel />
             </div>
         )
     }
 
     return (
         <div className={styles.container}>
-            <div className={styles.brandPanel}>
-                <div className={styles.brandLogoBadge}>
-                    <img src="/logo-new.png" alt="Batch Ascent" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                </div>
-                <div className={styles.brandName}>Batch Ascent</div>
-                <p className={styles.brandTagline}>
-                    One place to manage admissions, batches, payments and every student's journey from lead to onboarding.
-                </p>
-                <div className={styles.brandFeatures}>
-                    <div className={styles.brandFeature}><span className={styles.brandFeatureDot} /> Role-based dashboards for every department</div>
-                    <div className={styles.brandFeature}><span className={styles.brandFeatureDot} /> Real-time revenue &amp; admissions analytics</div>
-                    <div className={styles.brandFeature}><span className={styles.brandFeatureDot} /> End-to-end student lifecycle tracking</div>
-                </div>
-            </div>
             <div className={styles.formPanel}>
-            <div className={`card ${styles.loginCard} animate-fade-in`}>
-                <div className={styles.header} style={{ position: 'relative' }}>
-                    <Link to="/" style={{ position: 'absolute', left: 0, top: 0, color: 'var(--text-secondary)' }}>
-                        <ArrowLeft size={20} />
+                <div className={styles.loginCard}>
+                    <LogoRow />
+
+                    <Link to="/" className={styles.backLink}>
+                        <ArrowLeft size={15} /> Back to sign in
                     </Link>
 
-                    <div className={styles.mobileLogoBadge}>
-                        <img src="/logo-new.png" alt="Batch Ascent Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                    </div>
+                    <h1 className={styles.welcomeTitle}>Reset password</h1>
+                    <p className={styles.subtitle}>Enter the email tied to your account and we'll send you a link to reset your password.</p>
 
-                    <div className={styles.welcomeTitle} style={{ textAlign: 'center' }}>Reset Password</div>
-                    <p className={styles.subtitle} style={{ textAlign: 'center' }}>Enter your email to receive instructions</p>
-                </div>
-
-                {error && (
-                    <div style={{ padding: '0.75rem', background: 'var(--error-light)', border: '1px solid var(--error)', borderRadius: '0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--error)', fontSize: '0.875rem' }}>
-                        <AlertCircle size={16} />
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleReset} className={styles.form}>
-                    <div className={styles.inputGroup}>
-                        <label className={styles.label}>Email Address</label>
-                        <div className={styles.inputWrapper}>
-                            <Mail className={styles.icon} size={20} />
-                            <input
-                                name="email"
-                                type="email"
-                                placeholder="Enter your email"
-                                className={`input ${styles.inputWithIcon}`}
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                required
-                            />
+                    {error && (
+                        <div style={{ padding: '0.75rem', background: 'var(--error-light)', border: '1px solid var(--error)', borderRadius: '11px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--error)', fontSize: '0.875rem' }}>
+                            <AlertCircle size={16} />
+                            {error}
                         </div>
-                    </div>
+                    )}
 
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                        style={{ width: '100%', marginTop: '0.5rem' }}
-                        disabled={loading}
-                    >
-                        {loading ? 'Sending Link...' : 'Send Reset Link'}
-                    </button>
+                    <form onSubmit={handleReset} className={styles.form}>
+                        <div className={styles.inputGroup}>
+                            <label className={styles.label} style={{ display: 'block', marginBottom: '7px' }}>Email address</label>
+                            <div className={styles.inputWrapper}>
+                                <Mail className={styles.icon} size={17} />
+                                <input
+                                    name="email"
+                                    type="email"
+                                    placeholder="you@institute.edu"
+                                    className={styles.field}
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
 
-                    <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
-                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                            Remember password? <Link to="/" style={{ color: 'var(--primary)', fontWeight: '600' }}>Login</Link>
-                        </p>
-                    </div>
-                </form>
+                        <button type="submit" className={styles.submitBtn} disabled={loading}>
+                            {loading ? 'Sending link...' : 'Send reset link'}
+                        </button>
+                    </form>
+
+                    <p className={styles.footerText}>Remembered it? <Link to="/">Sign in</Link></p>
+                </div>
             </div>
-            </div>
+
+            <BrandPanel />
         </div>
     )
 }

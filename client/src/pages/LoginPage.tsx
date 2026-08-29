@@ -1,13 +1,61 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Lock, User, AlertCircle, Phone, ArrowRight } from 'lucide-react'
+import { Mail, Lock, AlertCircle, Phone, ArrowRight, Eye, EyeOff, Check } from 'lucide-react'
 import styles from './page.module.css'
 import { supabase } from '@/lib/supabaseClient'
 import { API_BASE } from '@/lib/api'
 
+const BRAND_FEATURES = [
+  "Role-based dashboards for every department",
+  "Real-time revenue & admissions analytics",
+  "End-to-end student lifecycle tracking",
+]
+
+// Shared right-side panel across Login/Signup/ForgotPassword — kept as a local component
+// here (rather than a separate file) since only these three pages use it.
+export function BrandPanel() {
+  return (
+    <div className={styles.brandPanel}>
+      <div className={styles.brandGrid} />
+      <div className={styles.brandBlobA} />
+      <div className={styles.brandBlobB} />
+      <div className={styles.brandInner}>
+        <div className={styles.brandBadge}>
+          <span className={styles.brandBadgeDot} />
+          Admissions OS for institutes
+        </div>
+        <h2 className={styles.brandHeadline}>One place for every student's journey.</h2>
+        <p className={styles.brandTagline}>
+          Manage admissions, batches, payments and onboarding — from first lead to enrolled student.
+        </p>
+        <div className={styles.brandFeatures}>
+          {BRAND_FEATURES.map(f => (
+            <div key={f} className={styles.brandFeature}>
+              <span className={styles.brandFeatureIcon}><Check size={17} color="white" /></span>
+              <span>{f}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export function LogoRow() {
+  return (
+    <div className={styles.brandRow}>
+      <div className={styles.logoBadge}>
+        <img src="/logo-new.png" alt="Batch Ascent" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+      </div>
+      <span className={styles.logoWordmark}>Batch Ascent</span>
+    </div>
+  )
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   // authedFetch (lib/api.ts) redirects here with ?sessionExpired=1 when the Supabase refresh
   // token has died and every API call started 401ing — surfaces as a plain re-login prompt
   // instead of the dashboard silently hanging on stale/empty data.
@@ -130,120 +178,103 @@ export default function LoginPage() {
 
   return (
     <div className={styles.container}>
-      {/* Brand panel — hidden on narrow viewports, see .brandPanel in page.module.css */}
-      <div className={styles.brandPanel}>
-        <div className={styles.brandLogoBadge}>
-          <img src="/logo-new.png" alt="Batch Ascent" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-        </div>
-        <div className={styles.brandName}>Batch Ascent</div>
-        <p className={styles.brandTagline}>
-          One place to manage admissions, batches, payments and every student's journey from lead to onboarding.
-        </p>
-        <div className={styles.brandFeatures}>
-          <div className={styles.brandFeature}><span className={styles.brandFeatureDot} /> Role-based dashboards for every department</div>
-          <div className={styles.brandFeature}><span className={styles.brandFeatureDot} /> Real-time revenue &amp; admissions analytics</div>
-          <div className={styles.brandFeature}><span className={styles.brandFeatureDot} /> End-to-end student lifecycle tracking</div>
-        </div>
-      </div>
-
       <div className={styles.formPanel}>
-        <div className={`card ${styles.loginCard} animate-fade-in`}>
-          <div className={styles.header}>
-            <div className={styles.mobileLogoBadge}>
-              <img src="/logo-new.png" alt="Batch Ascent" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <div className={styles.loginCard}>
+          <LogoRow />
+
+          {error && (
+            <div style={{ padding: '0.75rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--error)', borderRadius: '11px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--error)', fontSize: '0.875rem' }}>
+              <AlertCircle size={16} />
+              {error}
             </div>
-            <div className={styles.welcomeTitle}>Welcome back</div>
-            <p className={styles.subtitle}>Sign in to your Batch Ascent account</p>
-          </div>
+          )}
 
-        {error && (
-          <div style={{ padding: '0.75rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--error)', borderRadius: '0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--error)', fontSize: '0.875rem' }}>
-            <AlertCircle size={16} />
-            {error}
-          </div>
-        )}
+          {showPhoneInput ? (
+            <form onSubmit={handlePhoneSubmit} className={styles.form}>
+              <p className={styles.subtitle} style={{ marginBottom: '18px' }}>Please verify your phone number to generate your Sales ID.</p>
 
-        {showPhoneInput ? (
-          <form onSubmit={handlePhoneSubmit} className={styles.form}>
-            <div className="mb-4 text-center">
-              <p className="text-sm text-gray-500 mb-2">Please verify your phone number to generate your Sales ID.</p>
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label className={styles.label}>Phone Number</label>
-              <div className={styles.inputWrapper}>
-                <Phone className={styles.icon} />
-                <input
-                  type="tel"
-                  className={`input ${styles.inputWithIcon}`}
-                  placeholder="Enter phone number"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  required
-                />
+              <div className={styles.inputGroup}>
+                <label className={styles.label} style={{ display: 'block', marginBottom: '7px' }}>Phone number</label>
+                <div className={styles.inputWrapper}>
+                  <Phone className={styles.icon} />
+                  <input
+                    type="tel"
+                    className={styles.field}
+                    placeholder="Enter phone number"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-              {loading ? 'Generating Sales ID...' : 'Complete Setup'} <ArrowRight size={16} style={{ marginLeft: '8px' }} />
-            </button>
-
-            <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-              <button type="button" onClick={() => { setShowPhoneInput(false) }} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.875rem' }}>
-                Back to Login
+              <button type="submit" className={styles.submitBtn} disabled={loading} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                {loading ? 'Generating Sales ID...' : 'Complete Setup'} <ArrowRight size={16} />
               </button>
-            </div>
-          </form>
-        ) : (
-          <form onSubmit={handleLogin} className={styles.form}>
 
+              <button type="button" onClick={() => setShowPhoneInput(false)} className={styles.backLink} style={{ justifyContent: 'center', marginTop: '20px', marginBottom: 0, background: 'none', border: 'none', width: '100%', cursor: 'pointer' }}>
+                Back to sign in
+              </button>
+            </form>
+          ) : (
+            <>
+              <h1 className={styles.welcomeTitle}>Welcome back</h1>
+              <p className={styles.subtitle}>Sign in to your Batch Ascent account.</p>
 
-            <div className={styles.inputGroup}>
-              <label className={styles.label}>Email Address</label>
-              <div className={styles.inputWrapper}>
-                <User className={styles.icon} />
-                <input
-                  type="email"
-                  className={`input ${styles.inputWithIcon}`}
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
+              <form onSubmit={handleLogin} className={styles.form}>
+                <div className={styles.inputGroup}>
+                  <label className={styles.label} style={{ display: 'block', marginBottom: '7px' }}>Email address</label>
+                  <div className={styles.inputWrapper}>
+                    <Mail className={styles.icon} />
+                    <input
+                      type="email"
+                      className={styles.field}
+                      placeholder="you@institute.edu"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
 
-            <div className={styles.inputGroup}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <label className={styles.label} style={{ marginBottom: 0 }}>Password</label>
-                <Link to="/forgot-password" style={{ fontSize: '0.8rem', color: 'var(--primary)', textDecoration: 'none' }}>Forgot Password?</Link>
-              </div>
-              <div className={styles.inputWrapper}>
-                <Lock className={styles.icon} />
-                <input
-                  type="password"
-                  className={`input ${styles.inputWithIcon}`}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
+                <div className={styles.inputGroup}>
+                  <div className={styles.labelRow}>
+                    <label className={styles.label}>Password</label>
+                    <Link to="/forgot-password" className={styles.forgotLink}>Forgot password?</Link>
+                  </div>
+                  <div className={styles.inputWrapper}>
+                    <Lock className={styles.icon} />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      className={`${styles.field} ${styles.fieldWithToggle}`}
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button type="button" onClick={() => setShowPassword(v => !v)} className={styles.passwordToggle} tabIndex={-1}>
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-              {loading ? 'Signing In...' : 'Sign In'}
-            </button>
+                <label className={styles.checkboxRow}>
+                  <input type="checkbox" />
+                  <span>Keep me signed in</span>
+                </label>
 
-            <div style={{ textAlign: 'center', marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                Don't have an account? <Link to="/signup" style={{ color: 'var(--primary)', fontWeight: '600', textDecoration: 'none' }}>Sign Up</Link>
-              </p>
-            </div>
-          </form>
-        )}
+                <button type="submit" className={styles.submitBtn} disabled={loading}>
+                  {loading ? 'Signing in...' : 'Sign in'}
+                </button>
+              </form>
+
+              <p className={styles.footerText}>Don't have an account? <Link to="/signup">Create one</Link></p>
+            </>
+          )}
         </div>
       </div>
+
+      <BrandPanel />
     </div>
   )
 }
