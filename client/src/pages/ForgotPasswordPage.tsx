@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '@/lib/supabaseClient'
 import { Mail, ArrowLeft, AlertCircle } from 'lucide-react'
 import styles from './page.module.css'
-import { BrandPanel, LogoRow } from './LoginPage'
+import { LogoRow } from './LoginPage'
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState('')
@@ -50,7 +50,6 @@ export default function ForgotPasswordPage() {
                         <p className={styles.footerText} style={{ margin: 0 }}>Didn't get it? <a href="#" onClick={(e) => { e.preventDefault(); setSuccess(false) }}>Resend link</a></p>
                     </div>
                 </div>
-                <BrandPanel />
             </div>
         )
     }
@@ -100,8 +99,6 @@ export default function ForgotPasswordPage() {
                     <p className={styles.footerText}>Remembered it? <Link to="/">Sign in</Link></p>
                 </div>
             </div>
-
-            <BrandPanel />
         </div>
     )
 }

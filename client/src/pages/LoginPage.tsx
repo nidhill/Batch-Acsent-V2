@@ -1,46 +1,12 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Mail, Lock, AlertCircle, Phone, ArrowRight, Eye, EyeOff, Check } from 'lucide-react'
+import { Mail, Lock, AlertCircle, Phone, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import styles from './page.module.css'
 import { supabase } from '@/lib/supabaseClient'
 import { API_BASE } from '@/lib/api'
 
-const BRAND_FEATURES = [
-  "Role-based dashboards for every department",
-  "Real-time revenue & admissions analytics",
-  "End-to-end student lifecycle tracking",
-]
-
-// Shared right-side panel across Login/Signup/ForgotPassword — kept as a local component
-// here (rather than a separate file) since only these three pages use it.
-export function BrandPanel() {
-  return (
-    <div className={styles.brandPanel}>
-      <div className={styles.brandGrid} />
-      <div className={styles.brandBlobA} />
-      <div className={styles.brandBlobB} />
-      <div className={styles.brandInner}>
-        <div className={styles.brandBadge}>
-          <span className={styles.brandBadgeDot} />
-          Admissions OS for institutes
-        </div>
-        <h2 className={styles.brandHeadline}>One place for every student's journey.</h2>
-        <p className={styles.brandTagline}>
-          Manage admissions, batches, payments and onboarding — from first lead to enrolled student.
-        </p>
-        <div className={styles.brandFeatures}>
-          {BRAND_FEATURES.map(f => (
-            <div key={f} className={styles.brandFeature}>
-              <span className={styles.brandFeatureIcon}><Check size={17} color="white" /></span>
-              <span>{f}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
+// Shared logo row across Login/Signup/ForgotPassword — kept as a local component here
+// (rather than a separate file) since only these three pages use it.
 export function LogoRow() {
   return (
     <div className={styles.brandRow}>
@@ -273,8 +239,6 @@ export default function LoginPage() {
           )}
         </div>
       </div>
-
-      <BrandPanel />
     </div>
   )
 }

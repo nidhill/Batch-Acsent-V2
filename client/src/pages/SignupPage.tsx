@@ -5,7 +5,7 @@ import { Lock, User, Mail, Briefcase, School, Globe, ArrowLeft, AlertCircle, Eye
 import styles from './page.module.css'
 import { SCHOOLS } from '@/lib/constants'
 import { API_BASE } from '@/lib/api'
-import { BrandPanel, LogoRow } from './LoginPage'
+import { LogoRow } from './LoginPage'
 
 // SHO/SSHO removed — their workflows now live in the SHO app, so new signups
 // for those roles in Batch Ascent V2 no longer make sense.
@@ -135,7 +135,6 @@ export default function SignupPage() {
                         </Link>
                     </div>
                 </div>
-                <BrandPanel />
             </div>
         )
     }
@@ -275,8 +274,6 @@ export default function SignupPage() {
                     <p className={styles.footerText}>Already have an account? <Link to="/">Login</Link></p>
                 </div>
             </div>
-
-            <BrandPanel />
         </div>
     )
 }

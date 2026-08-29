@@ -1,14 +1,15 @@
 /* Login/Signup/Forgot-password redesign — matches the "Login page redesign" Claude Design
-   project (Login.dc.html): split screen, dark violet brand panel with animated grid/blobs,
-   Space Grotesk headings on a Figtree body. Scoped to these three pages only — the rest of
-   the app keeps its Inter font and existing --primary usage untouched; the accent color here
-   reuses --primary since it was already a close match to the design's violet accent. */
+   project (Login.dc.html), minus its right-side brand panel (dropped per request: full-width
+   white form instead of the split screen). Space Grotesk headings on a Figtree body. Scoped
+   to these three pages only — the rest of the app keeps its Inter font and existing --primary
+   usage untouched; the accent color here reuses --primary since it was already a close match
+   to the design's violet accent. */
 
 .container {
   min-height: 100vh;
   display: flex;
   width: 100%;
-  background: #fafafc;
+  background: #ffffff;
   font-family: 'Figtree', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -17,28 +18,9 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes floatA {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(-26px, 30px); }
-}
-
-@keyframes floatB {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(30px, -24px); }
-}
-
-@keyframes gridDrift {
-  to { background-position: 22px 22px; }
-}
-
 @keyframes badgePulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
   70% { box-shadow: 0 0 0 7px rgba(74, 222, 128, 0); }
-}
-
-@keyframes brandIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ---- Left: form ---- */
@@ -287,137 +269,7 @@
   animation: badgePulse 2.4s ease-in-out infinite;
 }
 
-/* ---- Right: brand panel ---- */
-.brandPanel {
-  flex: 1 1 0;
-  position: relative;
-  overflow: hidden;
-  background: #2a284e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 56px;
-  min-width: 0;
-  color: white;
-}
-
-.brandGrid {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
-  background-size: 22px 22px;
-  opacity: 0.6;
-  animation: gridDrift 8s linear infinite;
-}
-
-.brandBlobA {
-  position: absolute;
-  top: -120px;
-  right: -120px;
-  width: 360px;
-  height: 360px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(124 108 224 / 0.5), transparent 70%);
-  animation: floatA 14s ease-in-out infinite;
-}
-
-.brandBlobB {
-  position: absolute;
-  bottom: -140px;
-  left: -100px;
-  width: 340px;
-  height: 340px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(92 114 201 / 0.4), transparent 70%);
-  animation: floatB 18s ease-in-out infinite;
-}
-
-.brandInner {
-  position: relative;
-  max-width: 440px;
-  animation: brandIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.brandBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  font-size: 12.5px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: #e8e3fb;
-  margin-bottom: 30px;
-}
-
-.brandBadgeDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #4ade80;
-  animation: badgePulse 2.4s ease-in-out infinite;
-}
-
-.brandHeadline {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 40px;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin-bottom: 18px;
-  text-wrap: balance;
-}
-
-.brandTagline {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #d6d1f5;
-  margin-bottom: 40px;
-  max-width: 400px;
-}
-
-.brandFeatures {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.brandFeature {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  transition: transform 0.25s ease;
-}
-.brandFeature:hover { transform: translateX(6px); }
-
-.brandFeatureIcon {
-  flex-shrink: 0;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.brandFeature span {
-  font-size: 15.5px;
-  color: #eee9fc;
-}
-
 @media (max-width: 900px) {
-  .container {
-    flex-direction: column;
-  }
-
-  .brandPanel {
-    display: none;
-  }
-
   .formPanel {
     padding: 40px 24px;
   }
