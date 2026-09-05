@@ -8,6 +8,9 @@ import { STATES_BY_REGION, CITIES_BY_STATE } from '@/lib/locationData'
 const PHONE_PATTERN = '[6-9][0-9]{9}'
 const EMAIL_PATTERN = '[^\\s@]+@[^\\s@]+\\.[^\\s@]+'
 
+// ba_regions only ever has these two — mapped to the ISO2 codes /api/locations needs.
+const REGION_COUNTRY_CODE: Record<string, string> = { India: 'IN', 'UAE (Dubai)': 'AE' }
+
 export default function SalesIntimationPage() {
     const [searchParams] = useSearchParams()
     const [loading, setLoading] = useState(false)
@@ -53,6 +56,39 @@ export default function SalesIntimationPage() {
     const [userRole, setUserRole] = useState<string | null>(null)
     const [salesExecutives, setSalesExecutives] = useState<any[]>([])
     const [duplicateMatches, setDuplicateMatches] = useState<any[]>([])
+
+    // Live states/cities from countrystatecity.in (via the server, which holds the key) when
+    // configured; otherwise these stay empty and the selects/datalist fall back to the small
+    // bundled India/UAE list in lib/locationData.ts.
+    const [liveStates, setLiveStates] = useState<{ name: string; iso2: string }[]>([])
+    const [liveCities, setLiveCities] = useState<string[]>([])
+    const selectedLiveState = liveStates.find(s => s.name === formData.state)
+
+    useEffect(() => {
+        const countryCode = REGION_COUNTRY_CODE[formData.region]
+        if (!countryCode) { setLiveStates([]); return }
+        let cancelled = false
+        authedFetch(`/api/locations/states?country=${countryCode}`)
+            .then(res => res.json())
+            .then(data => { if (!cancelled) setLiveStates(data.states || []) })
+            .catch(() => { if (!cancelled) setLiveStates([]) })
+        return () => { cancelled = true }
+    }, [formData.region])
+
+    useEffect(() => {
+        const countryCode = REGION_COUNTRY_CODE[formData.region]
+        if (!countryCode || !selectedLiveState) { setLiveCities([]); return }
+        let cancelled = false
+        authedFetch(`/api/locations/cities?country=${countryCode}&state=${selectedLiveState.iso2}`)
+            .then(res => res.json())
+            .then(data => { if (!cancelled) setLiveCities(data.cities || []) })
+            .catch(() => { if (!cancelled) setLiveCities([]) })
+        return () => { cancelled = true }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formData.region, selectedLiveState?.iso2])
+
+    const stateOptions = liveStates.length > 0 ? liveStates.map(s => s.name) : (STATES_BY_REGION[formData.region] || [])
+    const cityOptions = selectedLiveState ? liveCities : (CITIES_BY_STATE[formData.state] || [])
 
     // Fetch User Profile and Schools on mount
     useEffect(() => {
@@ -433,7 +469,7 @@ export default function SalesIntimationPage() {
                                 style={!formData.region ? { background: 'var(--surface-hover)', cursor: 'not-allowed' } : {}}
                             >
                                 <option value="">{formData.region ? 'Select State' : 'Select a Region first'}</option>
-                                {(STATES_BY_REGION[formData.region] || []).map(s => <option key={s} value={s}>{s}</option>)}
+                                {stateOptions.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
                         <div>
@@ -445,7 +481,7 @@ export default function SalesIntimationPage() {
                                 value={formData.city} onChange={handleChange}
                             />
                             <datalist id="city-suggestions">
-                                {(CITIES_BY_STATE[formData.state] || []).map(c => <option key={c} value={c} />)}
+                                {cityOptions.map(c => <option key={c} value={c} />)}
                             </datalist>
                         </div>
                         <div>
