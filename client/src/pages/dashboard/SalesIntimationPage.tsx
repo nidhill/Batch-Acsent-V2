@@ -45,9 +45,7 @@ export default function SalesIntimationPage() {
         remarks: '',
         pledge_accepted: false
     })
-    const [documents, setDocuments] = useState<{ photo: File | null; id_proof: File | null; qualification_cert: File | null }>({
-        photo: null, id_proof: null, qualification_cert: null,
-    })
+    const [documents, setDocuments] = useState<{ photo: File | null }>({ photo: null })
 
     const [schoolsList, setSchoolsList] = useState<any[]>([])
     const [regionsList, setRegionsList] = useState<any[]>([])
@@ -315,7 +313,7 @@ export default function SalesIntimationPage() {
                 payment_channel: 'online', amount_paid: '', next_due_date: '',
                 transaction_number: '', receipt_number: '', remarks: '', pledge_accepted: false
             })
-            setDocuments({ photo: null, id_proof: null, qualification_cert: null })
+            setDocuments({ photo: null })
 
         } catch (error: any) {
             console.error('Error submitting form:', error)
@@ -640,14 +638,6 @@ export default function SalesIntimationPage() {
                         <div>
                             <label className="block mb-1 text-sm font-medium">Student Photo</label>
                             <input type="file" accept="image/*" className="input" onChange={(e) => setDocuments(prev => ({ ...prev, photo: e.target.files?.[0] || null }))} />
-                        </div>
-                        <div>
-                            <label className="block mb-1 text-sm font-medium">ID Proof</label>
-                            <input type="file" accept="image/*,.pdf" className="input" onChange={(e) => setDocuments(prev => ({ ...prev, id_proof: e.target.files?.[0] || null }))} />
-                        </div>
-                        <div>
-                            <label className="block mb-1 text-sm font-medium">Qualification Certificate</label>
-                            <input type="file" accept="image/*,.pdf" className="input" onChange={(e) => setDocuments(prev => ({ ...prev, qualification_cert: e.target.files?.[0] || null }))} />
                         </div>
                     </div>
                     <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>Optional at this stage — max 5MB per file, uploaded once the admission is submitted.</p>
