@@ -13,6 +13,19 @@ import { isDisposableOrFakeEmail } from '../lib/emailValidation'
 const router = Router()
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } })
 
+// Age is derived here rather than trusted from the client — the form already computes it
+// client-side for the "Age: N years" preview under the Date of Birth field, but the stored
+// value should reflect dob as of admission, not whatever number happened to be in the request.
+function calculateAge(dob: string): number | null {
+    const birth = new Date(dob)
+    if (isNaN(birth.getTime())) return null
+    const today = new Date()
+    let age = today.getFullYear() - birth.getFullYear()
+    const monthDiff = today.getMonth() - birth.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--
+    return age
+}
+
 // ---- Ported from src/app/api/admissions/route.ts ----
 router.get('/', authenticate, async (req, res, next) => {
     try {
@@ -185,7 +198,7 @@ router.post('/', authenticate, async (req, res, next) => {
             student_phone: student_phone || null,
             whatsapp_number: whatsapp_number || null,
             dob: dob || null,
-            age: age ? parseInt(age) : null,
+            age: dob ? calculateAge(dob) : (age ? parseInt(age) : null),
             gender: gender || null,
             city: city || null,
             state: state || null,
