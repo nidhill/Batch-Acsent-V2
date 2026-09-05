@@ -230,16 +230,8 @@ export default function SalesPage() {
                         </div>
                     )}
                     <div className="card" style={{ padding: '1.1rem 1.25rem' }}>
-                        <div className="kpi-label">Collected</div>
-                        <div className="kpi-value" style={{ color: 'var(--success)' }}>₹{revenue.collected.toLocaleString()}</div>
-                    </div>
-                    <div className="card" style={{ padding: '1.1rem 1.25rem' }}>
                         <div className="kpi-label">Pending Collection</div>
                         <div className="kpi-value" style={{ color: 'var(--warning)' }}>₹{revenue.pending.toLocaleString()}</div>
-                    </div>
-                    <div className="card" style={{ padding: '1.1rem 1.25rem' }}>
-                        <div className="kpi-label">Collection Rate</div>
-                        <div className="kpi-value">{revenue.collection_percentage}%</div>
                     </div>
                 </div>
             )}
