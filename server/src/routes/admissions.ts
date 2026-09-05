@@ -92,7 +92,7 @@ router.post('/', authenticate, async (req, res, next) => {
 
         const {
             batch_id, student_name, student_email, student_phone, whatsapp_number, sales_id, sales_user_id,
-            age, gender, city, state, region,
+            dob, age, gender, city, state, region,
             guardian_name, guardian_contact, address,
             lead_source, admission_date, lead_creation_date,
             discount, scholarship, payment_status, payment_method, payment_channel,
@@ -184,6 +184,7 @@ router.post('/', authenticate, async (req, res, next) => {
             student_email,
             student_phone: student_phone || null,
             whatsapp_number: whatsapp_number || null,
+            dob: dob || null,
             age: age ? parseInt(age) : null,
             gender: gender || null,
             city: city || null,

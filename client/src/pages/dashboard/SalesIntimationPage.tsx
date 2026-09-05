@@ -11,6 +11,20 @@ const EMAIL_PATTERN = '[^\\s@]+@[^\\s@]+\\.[^\\s@]+'
 // ba_regions only ever has these two — mapped to the ISO2 codes /api/locations needs.
 const REGION_COUNTRY_CODE: Record<string, string> = { India: 'IN', 'UAE (Dubai)': 'AE' }
 
+// Sales previously typed age directly, which drifts wrong the moment it's not re-entered
+// on someone's birthday — collecting Date of Birth and deriving age keeps the stored age
+// (still used by StudentDetailPage/ReportsPage/analytics) always correct as of admission.
+function calculateAge(dob: string): number | null {
+    if (!dob) return null
+    const birth = new Date(dob)
+    if (isNaN(birth.getTime())) return null
+    const today = new Date()
+    let age = today.getFullYear() - birth.getFullYear()
+    const monthDiff = today.getMonth() - birth.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--
+    return age
+}
+
 export default function SalesIntimationPage() {
     const [searchParams] = useSearchParams()
     const [loading, setLoading] = useState(false)
@@ -22,7 +36,7 @@ export default function SalesIntimationPage() {
         address: '',
         guardian_name: '',
         guardian_contact: '',
-        age: '',
+        dob: '',
         gender: '',
         city: '',
         state: '',
@@ -258,7 +272,8 @@ export default function SalesIntimationPage() {
                     address: formData.address,
                     guardian_name: formData.guardian_name,
                     guardian_contact: formData.guardian_contact,
-                    age: formData.age,
+                    dob: formData.dob,
+                    age: calculateAge(formData.dob),
                     gender: formData.gender,
                     city: formData.city,
                     state: formData.state,
@@ -306,7 +321,7 @@ export default function SalesIntimationPage() {
             setFormData({
                 student_name: '', contact_number: '', whatsapp_number: '', email: '',
                 address: '', guardian_name: '', guardian_contact: '',
-                age: '', gender: '', city: '', state: '', region: '',
+                dob: '', gender: '', city: '', state: '', region: '',
                 admission_date: '', lead_creation_date: '', lead_source: '',
                 school: userSchool || '', batch_code: '', sales_user_id: '',
                 discount: '0', scholarship: '0', payment_status: 'partial', payment_method: '',
@@ -439,8 +454,17 @@ export default function SalesIntimationPage() {
                             />
                         </div>
                         <div>
-                            <label className="block mb-1 text-sm font-medium">Age *</label>
-                            <input type="number" name="age" className="input" required min="1" max="120" value={formData.age} onChange={handleChange} />
+                            <label className="block mb-1 text-sm font-medium">Date of Birth *</label>
+                            <input
+                                type="date" name="dob" className="input" required
+                                max={new Date().toISOString().split('T')[0]}
+                                value={formData.dob} onChange={handleChange}
+                            />
+                            {formData.dob && calculateAge(formData.dob) !== null && (
+                                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.3rem' }}>
+                                    Age: {calculateAge(formData.dob)} years
+                                </p>
+                            )}
                         </div>
                         <div>
                             <label className="block mb-1 text-sm font-medium">Gender *</label>
