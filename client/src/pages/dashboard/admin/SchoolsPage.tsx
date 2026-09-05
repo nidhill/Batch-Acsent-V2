@@ -17,10 +17,16 @@ export default function SchoolsPage() {
     const [newCourse, setNewCourse] = useState<{ name: string, code: string, school_name: string, regions: string }>({ name: '', code: '', school_name: '', regions: '' })
 
     const [userRole, setUserRole] = useState<string | null>(null)
+    const [userSchool, setUserSchool] = useState<string | null>(null)
     // Course management (add/edit/delete/toggle) is also open to Academic Lead — they're the
     // ones creating batches and hitting "the course I need isn't in the list" most often.
     // School management (a much rarer, more structural change) stays Admin-only.
     const canManageCourses = ['ADMIN', 'ACADEMIC_LEAD'].includes(userRole || '')
+    // Academic Lead only manages their own assigned school — everyone else (Admin/CEO/Business
+    // Head, who land here for oversight) keeps seeing every school/course.
+    const isScopedToOwnSchool = userRole === 'ACADEMIC_LEAD'
+    const visibleSchools = isScopedToOwnSchool ? schools.filter(s => s.name === userSchool) : schools
+    const visibleCourses = isScopedToOwnSchool ? courses.filter(c => c.school_name === userSchool) : courses
 
     const [analytics, setAnalytics] = useState<any>(null)
 
@@ -32,6 +38,12 @@ export default function SchoolsPage() {
         }
         setAuthorized(true)
         setUserRole(storedRole)
+        const storedSchool = localStorage.getItem('userSchool')
+        setUserSchool(storedSchool)
+        // Only one option in the scoped-down dropdown anyway — save the click.
+        if (storedRole === 'ACADEMIC_LEAD' && storedSchool) {
+            setNewCourse(prev => ({ ...prev, school_name: storedSchool }))
+        }
         fetchSchools()
         fetchCourses()
         fetchAnalytics()
@@ -227,7 +239,7 @@ export default function SchoolsPage() {
 
                 {loading ? (
                     <div className="animate-pulse">Loading schools...</div>
-                ) : schools.length === 0 ? (
+                ) : visibleSchools.length === 0 ? (
                     <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
                         No schools found in the "schools" table.
                         <div style={{ marginTop: '1rem', fontSize: '0.875rem', background: 'var(--warning-light)', color: 'var(--warning)', padding: '0.5rem', borderRadius: '4px' }}>
@@ -236,7 +248,7 @@ export default function SchoolsPage() {
                     </div>
                 ) : (
                     <div style={{ display: 'grid', gap: '1rem' }}>
-                        {schools.map(school => (
+                        {visibleSchools.map(school => (
                             <div key={school.id} style={{
                                 display: 'flex',
                                 justifyContent: 'space-between',
@@ -295,7 +307,7 @@ export default function SchoolsPage() {
                             style={{ padding: '0.5rem' }}
                         >
                             <option value="">Select School</option>
-                            {schools.map(school => (
+                            {visibleSchools.map(school => (
                                 <option key={school.id} value={school.name}>
                                     {school.name}
                                 </option>
@@ -337,13 +349,13 @@ export default function SchoolsPage() {
             <div className="card">
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem' }}>Existing Courses</h3>
 
-                {courses.length === 0 ? (
+                {visibleCourses.length === 0 ? (
                     <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>
                         No courses found.
                     </div>
                 ) : (
                     <div style={{ display: 'grid', gap: '1rem' }}>
-                        {courses.map(course => (
+                        {visibleCourses.map(course => (
                             <div key={course.id} style={{
                                 display: 'flex',
                                 justifyContent: 'space-between',
@@ -438,7 +450,7 @@ export default function SchoolsPage() {
                                     onChange={e => setEditingCourse({ ...editingCourse, school_name: e.target.value })}
                                     required
                                 >
-                                    {schools.map(school => (
+                                    {visibleSchools.map(school => (
                                         <option key={school.id} value={school.name}>
                                             {school.name}
                                         </option>
