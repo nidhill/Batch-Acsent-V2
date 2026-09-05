@@ -3,6 +3,10 @@ import { useSearchParams } from 'react-router-dom'
 import { authedFetch } from '@/lib/api'
 import { Send } from 'lucide-react'
 import { PAYMENT_STATUSES, PAYMENT_METHODS, PAYMENT_CHANNELS, LEAD_SOURCES } from '@/lib/constants'
+import { STATES_BY_REGION, CITIES_BY_STATE } from '@/lib/locationData'
+
+const PHONE_PATTERN = '[6-9][0-9]{9}'
+const EMAIL_PATTERN = '[^\\s@]+@[^\\s@]+\\.[^\\s@]+'
 
 export default function SalesIntimationPage() {
     const [searchParams] = useSearchParams()
@@ -160,6 +164,15 @@ export default function SalesIntimationPage() {
         } else {
             setFormData(prev => ({ ...prev, [name]: value }))
         }
+    }
+
+    // Region -> State -> City cascade: changing a broader field clears whatever was picked
+    // under it, since a state/city from the old region/state is almost never still valid.
+    const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFormData(prev => ({ ...prev, region: e.target.value, state: '', city: '' }))
+    }
+    const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setFormData(prev => ({ ...prev, state: e.target.value, city: '' }))
     }
 
     // Course fee is auto-fetched from the selected batch — Sales cannot edit it directly,
@@ -338,15 +351,31 @@ export default function SalesIntimationPage() {
                         </div>
                         <div>
                             <label className="block mb-1 text-sm font-medium">Mobile Number *</label>
-                            <input type="tel" name="contact_number" className="input" required value={formData.contact_number} onChange={handleChange} onBlur={() => checkDuplicate(formData.email, formData.contact_number)} />
+                            <input
+                                type="tel" name="contact_number" className="input" required
+                                inputMode="numeric" maxLength={10} pattern={PHONE_PATTERN}
+                                title="Enter a valid 10-digit Indian mobile number"
+                                value={formData.contact_number} onChange={handleChange}
+                                onBlur={() => checkDuplicate(formData.email, formData.contact_number)}
+                            />
                         </div>
                         <div>
                             <label className="block mb-1 text-sm font-medium">WhatsApp Number *</label>
-                            <input type="tel" name="whatsapp_number" className="input" required value={formData.whatsapp_number} onChange={handleChange} />
+                            <input
+                                type="tel" name="whatsapp_number" className="input" required
+                                inputMode="numeric" maxLength={10} pattern={PHONE_PATTERN}
+                                title="Enter a valid 10-digit Indian mobile number"
+                                value={formData.whatsapp_number} onChange={handleChange}
+                            />
                         </div>
                         <div>
                             <label className="block mb-1 text-sm font-medium">Email Address *</label>
-                            <input type="email" name="email" className="input" required value={formData.email} onChange={handleChange} onBlur={() => checkDuplicate(formData.email, formData.contact_number)} />
+                            <input
+                                type="email" name="email" className="input" required
+                                pattern={EMAIL_PATTERN} title="Enter a valid email address"
+                                value={formData.email} onChange={handleChange}
+                                onBlur={() => checkDuplicate(formData.email, formData.contact_number)}
+                            />
                         </div>
                         {duplicateMatches.length > 0 && (
                             <div style={{ gridColumn: '1 / -1', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', padding: '0.75rem 1rem', fontSize: '0.85rem', color: '#991b1b' }}>
@@ -363,12 +392,17 @@ export default function SalesIntimationPage() {
                             <input type="text" name="address" className="input" required value={formData.address} onChange={handleChange} />
                         </div>
                         <div>
-                            <label className="block mb-1 text-sm font-medium">Guardian Name *</label>
-                            <input type="text" name="guardian_name" className="input" required value={formData.guardian_name} onChange={handleChange} />
+                            <label className="block mb-1 text-sm font-medium">Guardian Name</label>
+                            <input type="text" name="guardian_name" className="input" value={formData.guardian_name} onChange={handleChange} />
                         </div>
                         <div>
-                            <label className="block mb-1 text-sm font-medium">Guardian Contact *</label>
-                            <input type="tel" name="guardian_contact" className="input" required value={formData.guardian_contact} onChange={handleChange} />
+                            <label className="block mb-1 text-sm font-medium">Guardian Contact</label>
+                            <input
+                                type="tel" name="guardian_contact" className="input"
+                                inputMode="numeric" maxLength={10} pattern={PHONE_PATTERN}
+                                title="Enter a valid 10-digit Indian mobile number"
+                                value={formData.guardian_contact} onChange={handleChange}
+                            />
                         </div>
                         <div>
                             <label className="block mb-1 text-sm font-medium">Age *</label>
@@ -384,19 +418,35 @@ export default function SalesIntimationPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block mb-1 text-sm font-medium">City *</label>
-                            <input type="text" name="city" className="input" required value={formData.city} onChange={handleChange} />
-                        </div>
-                        <div>
-                            <label className="block mb-1 text-sm font-medium">State *</label>
-                            <input type="text" name="state" className="input" required value={formData.state} onChange={handleChange} />
-                        </div>
-                        <div>
                             <label className="block mb-1 text-sm font-medium">Region *</label>
-                            <select name="region" className="input" required value={formData.region} onChange={handleChange}>
+                            <select name="region" className="input" required value={formData.region} onChange={handleRegionChange}>
                                 <option value="">Select Region</option>
                                 {regionsList.map(r => <option key={r._id} value={r.name}>{r.name}</option>)}
                             </select>
+                        </div>
+                        <div>
+                            <label className="block mb-1 text-sm font-medium">State *</label>
+                            <select
+                                name="state" className="input" required
+                                value={formData.state} onChange={handleStateChange}
+                                disabled={!formData.region}
+                                style={!formData.region ? { background: 'var(--surface-hover)', cursor: 'not-allowed' } : {}}
+                            >
+                                <option value="">{formData.region ? 'Select State' : 'Select a Region first'}</option>
+                                {(STATES_BY_REGION[formData.region] || []).map(s => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block mb-1 text-sm font-medium">City *</label>
+                            <input
+                                type="text" name="city" className="input" required
+                                list="city-suggestions"
+                                placeholder={formData.state ? 'Select or type a city' : 'Select a State first'}
+                                value={formData.city} onChange={handleChange}
+                            />
+                            <datalist id="city-suggestions">
+                                {(CITIES_BY_STATE[formData.state] || []).map(c => <option key={c} value={c} />)}
+                            </datalist>
                         </div>
                         <div>
                             <label className="block mb-1 text-sm font-medium">Date of Admission Confirmation *</label>
