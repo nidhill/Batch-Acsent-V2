@@ -9,6 +9,9 @@ type Role = (typeof ROLES)[keyof typeof ROLES]
 export const PERMISSIONS = {
     MANAGE_USERS: [ROLES.ADMIN],
     MANAGE_SCHOOLS_COURSES: [ROLES.ADMIN],
+    // Separate from MANAGE_SCHOOLS_COURSES (schools stay Admin-only) — Academic Lead creates
+    // batches and is the one who actually needs to add a missing course.
+    MANAGE_COURSES: [ROLES.ADMIN, ROLES.ACADEMIC_LEAD],
     VIEW_ACTIVITY_LOGS: [ROLES.ADMIN, ROLES.CEO, ROLES.BUSINESS_HEAD],
     CREATE_EDIT_BATCH: [ROLES.ADMIN, ROLES.CEO, ROLES.ACADEMIC_LEAD],
     DELETE_BATCH: [ROLES.ADMIN, ROLES.CEO, ROLES.ACADEMIC_LEAD],

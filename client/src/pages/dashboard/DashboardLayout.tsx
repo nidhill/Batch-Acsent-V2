@@ -128,7 +128,7 @@ export default function DashboardLayout() {
         { label: 'Student 360°', href: '/dashboard/student-360', icon: UserSearch, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
         { label: 'LMS Access Policy', href: '/dashboard/lms-access-policy', icon: ShieldCheck, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },
         { label: 'Reports', href: '/dashboard/reports', icon: FileText, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD', 'ACADEMIC_LEAD'] },
-        { label: 'Manage Schools & Courses', href: '/dashboard/admin/schools', icon: BookOpen, roles: ['ADMIN', 'CEO'] },
+        { label: 'Manage Schools & Courses', href: '/dashboard/admin/schools', icon: BookOpen, roles: ['ADMIN', 'CEO', 'ACADEMIC_LEAD'] },
         { label: 'Manage Users', href: '/dashboard/admin/users', icon: Users, roles: ['ADMIN', 'CEO'] },
         { label: 'Approve Users', href: '/dashboard/admin/approve-users', icon: Users, roles: ['ADMIN', 'CEO'] },
         { label: 'Activity Logs', href: '/dashboard/admin/logs', icon: Activity, roles: ['ADMIN', 'CEO', 'BUSINESS_HEAD'] },

@@ -1,8 +1,15 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { authedFetch } from '@/lib/api'
 import { Plus, Trash2, School, BookOpen } from 'lucide-react'
 
+// Routed outside AdminGate (see App.tsx) so Academic Lead can reach this page without also
+// getting Manage Users/Approve Users/Activity Logs — guards itself the same way AdminGate does.
+const ALLOWED_ROLES = ['ADMIN', 'CEO', 'BUSINESS_HEAD', 'ACADEMIC_LEAD']
+
 export default function SchoolsPage() {
+    const navigate = useNavigate()
+    const [authorized, setAuthorized] = useState(false)
     const [schools, setSchools] = useState<any[]>([])
     const [courses, setCourses] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
@@ -10,15 +17,25 @@ export default function SchoolsPage() {
     const [newCourse, setNewCourse] = useState<{ name: string, code: string, school_name: string, regions: string }>({ name: '', code: '', school_name: '', regions: '' })
 
     const [userRole, setUserRole] = useState<string | null>(null)
+    // Course management (add/edit/delete/toggle) is also open to Academic Lead — they're the
+    // ones creating batches and hitting "the course I need isn't in the list" most often.
+    // School management (a much rarer, more structural change) stays Admin-only.
+    const canManageCourses = ['ADMIN', 'ACADEMIC_LEAD'].includes(userRole || '')
 
     const [analytics, setAnalytics] = useState<any>(null)
 
     useEffect(() => {
         const storedRole = localStorage.getItem('userRole')
+        if (!ALLOWED_ROLES.includes(storedRole || '')) {
+            navigate('/dashboard')
+            return
+        }
+        setAuthorized(true)
         setUserRole(storedRole)
         fetchSchools()
         fetchCourses()
         fetchAnalytics()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const fetchAnalytics = async () => {
@@ -77,7 +94,7 @@ export default function SchoolsPage() {
 
     const handleAddCourse = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (userRole !== 'ADMIN') return alert('Only admins can add courses')
+        if (!canManageCourses) return alert('Only admins and academic leads can add courses')
         try {
             const res = await authedFetch('/api/courses', {
                 method: 'POST',
@@ -114,7 +131,7 @@ export default function SchoolsPage() {
     }
 
     const handleDeleteCourse = async (id: string) => {
-        if (userRole !== 'ADMIN') return alert('Only admins can delete courses')
+        if (!canManageCourses) return alert('Only admins and academic leads can delete courses')
         if (!confirm('Are you sure you want to delete this course?')) return
 
         try {
@@ -165,6 +182,8 @@ export default function SchoolsPage() {
             alert('Error updating course: ' + error.message)
         }
     }
+
+    if (!authorized) return null
 
     return (
         <div className="animate-fade-in">
@@ -263,8 +282,8 @@ export default function SchoolsPage() {
                 < BookOpen /> Manage Courses
             </h2>
 
-            {/* Add Course Form - ADMIN ONLY */}
-            {userRole === 'ADMIN' && (
+            {/* Add Course Form - Admin and Academic Lead */}
+            {canManageCourses && (
                 <div className="card mb-8" style={{ marginBottom: '2rem' }}>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>Add New Course</h3>
                     <form onSubmit={handleAddCourse} style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
@@ -360,7 +379,7 @@ export default function SchoolsPage() {
                                     )}
                                 </div>
                                 <div style={{ display: 'flex', gap: '1rem' }}>
-                                    {userRole === 'ADMIN' && (
+                                    {canManageCourses && (
                                         <button
                                             onClick={() => handleToggleCourseActive(course)}
                                             style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.85rem' }}
@@ -369,7 +388,7 @@ export default function SchoolsPage() {
                                             {course.is_active === false ? 'Activate' : 'Deactivate'}
                                         </button>
                                     )}
-                                    {userRole === 'ADMIN' && (
+                                    {canManageCourses && (
                                         <button
                                             onClick={() => setEditingCourse(course)}
                                             style={{ background: 'none', border: 'none', color: 'var(--primary)', cursor: 'pointer' }}
@@ -378,7 +397,7 @@ export default function SchoolsPage() {
                                             Edit
                                         </button>
                                     )}
-                                    {userRole === 'ADMIN' && (
+                                    {canManageCourses && (
                                         <button
                                             onClick={() => handleDeleteCourse(course.id)}
                                             style={{ background: 'none', border: 'none', color: 'var(--error)', cursor: 'pointer' }}

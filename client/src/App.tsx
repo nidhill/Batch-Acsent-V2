@@ -66,8 +66,12 @@ function App() {
           <Route path="batch/:id" element={<BatchDetailPage />} />
           <Route path="batch/:id/edit" element={<BatchEditPage />} />
 
+          {/* Outside AdminGate (which also covers Users/Approve Users/Logs) — Academic Lead
+              needs Schools & Courses too (to add a course while creating a batch) but not
+              those other admin pages. SchoolsPage guards itself, matching AdminGate's pattern. */}
+          <Route path="admin/schools" element={<SchoolsPage />} />
+
           <Route path="admin" element={<AdminGate />}>
-            <Route path="schools" element={<SchoolsPage />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="users/:id/history" element={<UserHistoryPage />} />
             <Route path="approve-users" element={<ApproveUsersPage />} />

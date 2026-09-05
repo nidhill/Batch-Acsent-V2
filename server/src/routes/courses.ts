@@ -21,7 +21,7 @@ router.get('/', authenticate, async (req, res, next) => {
 router.post('/', authenticate, async (req, res, next) => {
     try {
         const { authUserId, profile } = req.auth!
-        if (!can(profile.role, 'MANAGE_SCHOOLS_COURSES')) {
+        if (!can(profile.role, 'MANAGE_COURSES')) {
             res.status(403).json({ error: 'Forbidden' })
             return
         }
@@ -59,7 +59,7 @@ router.post('/', authenticate, async (req, res, next) => {
 router.patch('/:id', authenticate, async (req, res, next) => {
     try {
         const { authUserId, profile } = req.auth!
-        if (!can(profile.role, 'MANAGE_SCHOOLS_COURSES')) {
+        if (!can(profile.role, 'MANAGE_COURSES')) {
             res.status(403).json({ error: 'Forbidden' })
             return
         }
@@ -98,7 +98,7 @@ router.patch('/:id', authenticate, async (req, res, next) => {
 router.delete('/:id', authenticate, async (req, res, next) => {
     try {
         const { authUserId, profile } = req.auth!
-        if (!can(profile.role, 'MANAGE_SCHOOLS_COURSES')) {
+        if (!can(profile.role, 'MANAGE_COURSES')) {
             res.status(403).json({ error: 'Forbidden' })
             return
         }
